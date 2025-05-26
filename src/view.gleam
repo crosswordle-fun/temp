@@ -4,12 +4,17 @@ import lustre/attribute
 import lustre/element/html
 import lustre/event
 import msg
-import wordle.{type Wordle}
+import wordle.{type Progress, type Wordle}
 
 pub fn view(model: Wordle) {
   html.body(
     [attribute.class("min-h-screen bg-white flex flex-col items-center px-2")],
-    [title_view(), level_view(), tiles_view(model.guess), keyboard_view()],
+    [
+      title_view(),
+      level_view(),
+      tiles_view(model.guess, model.progress),
+      keyboard_view(),
+    ],
   )
 }
 
@@ -45,20 +50,31 @@ fn level_view() {
   )
 }
 
-fn tiles_view(guess: List(String)) {
+fn tiles_view(guess: List(String), progress: List(Progress)) {
+  let progress_colors =
+    progress
+    |> list.map(fn(x) {
+      case x {
+        wordle.NotSet -> "bg-white"
+        wordle.Absent -> "bg-gray-300"
+        wordle.Present -> "bg-yellow-400"
+        wordle.Correct -> "bg-green-400"
+      }
+    })
   html.div([attribute.class("flex justify-center py-5 bg-white")], [
     html.div(
       [attribute.class("grid grid-cols-5 gap-1.5")],
-      guess |> list.map(single_tile),
+      guess |> list.map2(progress_colors, single_tile),
     ),
   ])
 }
 
-fn single_tile(letter: String) {
+fn single_tile(letter: String, progress_color: String) {
   html.div(
     [
       attribute.class(
-        "w-14 h-14 sm:w-16 sm:h-16 border border-black bg-white flex items-center justify-center text-3xl font-bold uppercase text-black",
+        "w-14 h-14 sm:w-16 sm:h-16 border border-black flex items-center justify-center text-3xl font-bold uppercase text-black "
+        <> progress_color,
       ),
     ],
     [html.text(letter)],
@@ -136,6 +152,7 @@ fn key_view(single_key: String) {
 fn enter_key_view() {
   html.button(
     [
+      event.on_click(msg.PlayerSubmitWordle),
       attribute.class(
         "
         

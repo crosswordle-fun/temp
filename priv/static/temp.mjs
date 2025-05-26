@@ -1102,6 +1102,22 @@ function reverse_and_prepend(loop$prefix, loop$suffix) {
 function reverse(list4) {
   return reverse_and_prepend(list4, toList([]));
 }
+function contains(loop$list, loop$elem) {
+  while (true) {
+    let list4 = loop$list;
+    let elem = loop$elem;
+    if (list4.hasLength(0)) {
+      return false;
+    } else if (list4.atLeastLength(1) && isEqual(list4.head, elem)) {
+      let first$1 = list4.head;
+      return true;
+    } else {
+      let rest$1 = list4.tail;
+      loop$list = rest$1;
+      loop$elem = elem;
+    }
+  }
+}
 function map_loop(loop$list, loop$fun, loop$acc) {
   while (true) {
     let list4 = loop$list;
@@ -1120,6 +1136,73 @@ function map_loop(loop$list, loop$fun, loop$acc) {
 }
 function map(list4, fun) {
   return map_loop(list4, fun, toList([]));
+}
+function map2_loop(loop$list1, loop$list2, loop$fun, loop$acc) {
+  while (true) {
+    let list1 = loop$list1;
+    let list22 = loop$list2;
+    let fun = loop$fun;
+    let acc = loop$acc;
+    if (list1.hasLength(0)) {
+      return reverse(acc);
+    } else if (list22.hasLength(0)) {
+      return reverse(acc);
+    } else {
+      let a = list1.head;
+      let as_ = list1.tail;
+      let b = list22.head;
+      let bs = list22.tail;
+      loop$list1 = as_;
+      loop$list2 = bs;
+      loop$fun = fun;
+      loop$acc = prepend(fun(a, b), acc);
+    }
+  }
+}
+function map2(list1, list22, fun) {
+  return map2_loop(list1, list22, fun, toList([]));
+}
+function map_fold_loop(loop$list, loop$fun, loop$acc, loop$list_acc) {
+  while (true) {
+    let list4 = loop$list;
+    let fun = loop$fun;
+    let acc = loop$acc;
+    let list_acc = loop$list_acc;
+    if (list4.hasLength(0)) {
+      return [acc, reverse(list_acc)];
+    } else {
+      let first$1 = list4.head;
+      let rest$1 = list4.tail;
+      let $ = fun(acc, first$1);
+      let acc$1 = $[0];
+      let first$2 = $[1];
+      loop$list = rest$1;
+      loop$fun = fun;
+      loop$acc = acc$1;
+      loop$list_acc = prepend(first$2, list_acc);
+    }
+  }
+}
+function map_fold(list4, initial, fun) {
+  return map_fold_loop(list4, fun, initial, toList([]));
+}
+function drop(loop$list, loop$n) {
+  while (true) {
+    let list4 = loop$list;
+    let n = loop$n;
+    let $ = n <= 0;
+    if ($) {
+      return list4;
+    } else {
+      if (list4.hasLength(0)) {
+        return toList([]);
+      } else {
+        let rest$1 = list4.tail;
+        loop$list = rest$1;
+        loop$n = n - 1;
+      }
+    }
+  }
 }
 function append_loop(loop$first, loop$second) {
   while (true) {
@@ -1141,6 +1224,23 @@ function append(first, second) {
 function prepend2(list4, item) {
   return prepend(item, list4);
 }
+function flatten_loop(loop$lists, loop$acc) {
+  while (true) {
+    let lists = loop$lists;
+    let acc = loop$acc;
+    if (lists.hasLength(0)) {
+      return reverse(acc);
+    } else {
+      let list4 = lists.head;
+      let further_lists = lists.tail;
+      loop$lists = further_lists;
+      loop$acc = reverse_and_prepend(list4, acc);
+    }
+  }
+}
+function flatten(lists) {
+  return flatten_loop(lists, toList([]));
+}
 function fold(loop$list, loop$initial, loop$fun) {
   while (true) {
     let list4 = loop$list;
@@ -1156,6 +1256,26 @@ function fold(loop$list, loop$initial, loop$fun) {
       loop$fun = fun;
     }
   }
+}
+function unzip_loop(loop$input, loop$one, loop$other) {
+  while (true) {
+    let input = loop$input;
+    let one = loop$one;
+    let other = loop$other;
+    if (input.hasLength(0)) {
+      return [reverse(one), reverse(other)];
+    } else {
+      let first_one = input.head[0];
+      let first_other = input.head[1];
+      let rest$1 = input.tail;
+      loop$input = rest$1;
+      loop$one = prepend(first_one, one);
+      loop$other = prepend(first_other, other);
+    }
+  }
+}
+function unzip(input) {
+  return unzip_loop(input, toList([]), toList([]));
 }
 function sequences(loop$list, loop$compare, loop$growing, loop$direction, loop$prev, loop$acc) {
   while (true) {
@@ -1492,8 +1612,64 @@ function repeat_loop(loop$item, loop$times, loop$acc) {
 function repeat(a, times) {
   return repeat_loop(a, times, toList([]));
 }
+function chunk_loop(loop$list, loop$f, loop$previous_key, loop$current_chunk, loop$acc) {
+  while (true) {
+    let list4 = loop$list;
+    let f = loop$f;
+    let previous_key = loop$previous_key;
+    let current_chunk = loop$current_chunk;
+    let acc = loop$acc;
+    if (list4.atLeastLength(1)) {
+      let first$1 = list4.head;
+      let rest$1 = list4.tail;
+      let key = f(first$1);
+      let $ = isEqual(key, previous_key);
+      if ($) {
+        loop$list = rest$1;
+        loop$f = f;
+        loop$previous_key = key;
+        loop$current_chunk = prepend(first$1, current_chunk);
+        loop$acc = acc;
+      } else {
+        let new_acc = prepend(reverse(current_chunk), acc);
+        loop$list = rest$1;
+        loop$f = f;
+        loop$previous_key = key;
+        loop$current_chunk = toList([first$1]);
+        loop$acc = new_acc;
+      }
+    } else {
+      return reverse(prepend(reverse(current_chunk), acc));
+    }
+  }
+}
+function chunk(list4, f) {
+  if (list4.hasLength(0)) {
+    return toList([]);
+  } else {
+    let first$1 = list4.head;
+    let rest$1 = list4.tail;
+    return chunk_loop(rest$1, f, f(first$1), toList([first$1]), toList([]));
+  }
+}
 
 // build/dev/javascript/gleam_stdlib/gleam/string.mjs
+function compare3(a, b) {
+  let $ = a === b;
+  if ($) {
+    return new Eq();
+  } else {
+    let $1 = less_than(a, b);
+    if ($1) {
+      return new Lt();
+    } else {
+      return new Gt();
+    }
+  }
+}
+function append2(first, second) {
+  return first + second;
+}
 function concat_loop(loop$strings, loop$accumulator) {
   while (true) {
     let strings = loop$strings;
@@ -1534,7 +1710,7 @@ function success(data) {
     return [data, toList([])];
   });
 }
-function map2(decoder, transformer) {
+function map3(decoder, transformer) {
   return new Decoder(
     (d) => {
       let $ = decoder.function(d);
@@ -1551,6 +1727,21 @@ var NOT_FOUND = {};
 function to_string(term) {
   return term.toString();
 }
+function string_length(string5) {
+  if (string5 === "") {
+    return 0;
+  }
+  const iterator = graphemes_iterator(string5);
+  if (iterator) {
+    let i = 0;
+    for (const _ of iterator) {
+      i++;
+    }
+    return i;
+  } else {
+    return string5.match(/./gsu).length;
+  }
+}
 function graphemes(string5) {
   const iterator = graphemes_iterator(string5);
   if (iterator) {
@@ -1565,6 +1756,9 @@ function graphemes_iterator(string5) {
     segmenter ||= new Intl.Segmenter();
     return segmenter.segment(string5)[Symbol.iterator]();
   }
+}
+function less_than(a, b) {
+  return a < b;
 }
 function starts_with(haystack, needle) {
   return haystack.startsWith(needle);
@@ -1596,15 +1790,15 @@ var trim_end_regex = /* @__PURE__ */ new RegExp(`[${unicode_whitespaces}]*$`);
 function new_map() {
   return Dict.new();
 }
-function map_get(map4, key) {
-  const value = map4.get(key, NOT_FOUND);
+function map_get(map5, key) {
+  const value = map5.get(key, NOT_FOUND);
   if (value === NOT_FOUND) {
     return new Error(Nil);
   }
   return new Ok(value);
 }
-function map_insert(key, value, map4) {
-  return map4.set(key, value);
+function map_insert(key, value, map5) {
+  return map5.set(key, value);
 }
 
 // build/dev/javascript/gleam_stdlib/gleam/dict.mjs
@@ -1613,6 +1807,9 @@ function insert(dict2, key, value) {
 }
 
 // build/dev/javascript/gleam_stdlib/gleam/bool.mjs
+function or(a, b) {
+  return a || b;
+}
 function guard(requirement, consequence, alternative) {
   if (requirement) {
     return consequence;
@@ -1645,7 +1842,7 @@ var Set2 = class extends CustomType {
 function new$() {
   return new Set2(new_map());
 }
-function contains(set, member) {
+function contains2(set, member) {
   let _pipe = set.dict;
   let _pipe$1 = map_get(_pipe, member);
   return is_ok(_pipe$1);
@@ -1679,7 +1876,7 @@ var option_none = /* @__PURE__ */ new None();
 var GT = /* @__PURE__ */ new Gt();
 var LT = /* @__PURE__ */ new Lt();
 var EQ = /* @__PURE__ */ new Eq();
-function compare3(a, b) {
+function compare4(a, b) {
   if (a.name === b.name) {
     return EQ;
   } else if (a.name < b.name) {
@@ -1772,7 +1969,7 @@ function prepare(attributes) {
   } else {
     let _pipe = attributes;
     let _pipe$1 = sort(_pipe, (a, b) => {
-      return compare3(b, a);
+      return compare4(b, a);
     });
     return merge(_pipe$1, empty_list);
   }
@@ -1827,22 +2024,22 @@ function none() {
 function empty2() {
   return null;
 }
-function get(map4, key) {
-  const value = map4?.get(key);
+function get(map5, key) {
+  const value = map5?.get(key);
   if (value != null) {
     return new Ok(value);
   } else {
     return new Error(void 0);
   }
 }
-function insert3(map4, key, value) {
-  map4 ??= /* @__PURE__ */ new Map();
-  map4.set(key, value);
-  return map4;
+function insert3(map5, key, value) {
+  map5 ??= /* @__PURE__ */ new Map();
+  map5.set(key, value);
+  return map5;
 }
-function remove(map4, key) {
-  map4?.delete(key);
-  return map4;
+function remove(map5, key) {
+  map5?.delete(key);
+  return map5;
 }
 
 // build/dev/javascript/lustre/lustre/vdom/path.mjs
@@ -2386,7 +2583,7 @@ function diff_attributes(loop$controlled, loop$path, loop$mapper, loop$events, l
       let remaining_old = old.tail;
       let next = new$8.head;
       let remaining_new = new$8.tail;
-      let $ = compare3(prev, next);
+      let $ = compare4(prev, next);
       if (prev instanceof Attribute && $ instanceof Eq && next instanceof Attribute) {
         let _block;
         let $1 = next.name;
@@ -2579,7 +2776,7 @@ function do_diff(loop$old, loop$old_keyed, loop$new, loop$new_keyed, loop$moved,
       let prev = old.head;
       let old$1 = old.tail;
       let _block;
-      let $ = prev.key === "" || !contains(moved, prev.key);
+      let $ = prev.key === "" || !contains2(moved, prev.key);
       if ($) {
         _block = removed + advance(prev);
       } else {
@@ -2622,7 +2819,7 @@ function do_diff(loop$old, loop$old_keyed, loop$new, loop$new_keyed, loop$moved,
       let new_remaining = new$8.tail;
       let next_did_exist = get(old_keyed, next.key);
       let prev_does_exist = get(new_keyed, prev.key);
-      let prev_has_moved = contains(moved, prev.key);
+      let prev_has_moved = contains2(moved, prev.key);
       if (prev_does_exist.isOk() && next_did_exist.isOk() && prev_has_moved) {
         loop$old = old_remaining;
         loop$old_keyed = old_keyed;
@@ -3717,7 +3914,7 @@ function do_add_event(handlers, mapper, path, name, handler) {
   return insert3(
     handlers,
     event2(path, name),
-    map2(handler, identity2(mapper))
+    map3(handler, identity2(mapper))
   );
 }
 function add_event(events, mapper, path, name, handler) {
@@ -4107,6 +4304,12 @@ var Wordle = class extends CustomType {
 };
 var NotSet = class extends CustomType {
 };
+var Absent = class extends CustomType {
+};
+var Present = class extends CustomType {
+};
+var Correct = class extends CustomType {
+};
 function init_wordle(_) {
   let level = 1;
   let _block;
@@ -4147,6 +4350,95 @@ function remove_letter(word) {
     return prepend(a, remove_letter(rest));
   }
 }
+function check_with_freqs(freq, letter) {
+  let _block;
+  let _pipe = freq;
+  let _pipe$1 = sort(_pipe, compare3);
+  let _pipe$2 = chunk(_pipe$1, (x) => {
+    return x;
+  });
+  let _pipe$3 = map(
+    _pipe$2,
+    (chunk2) => {
+      let $12 = (() => {
+        let _pipe$32 = chunk2;
+        return contains(_pipe$32, letter);
+      })();
+      if (!$12) {
+        return [false, chunk2];
+      } else {
+        return [
+          true,
+          (() => {
+            let _pipe$32 = chunk2;
+            return drop(_pipe$32, 1);
+          })()
+        ];
+      }
+    }
+  );
+  _block = unzip(_pipe$3);
+  let $ = _block;
+  let is_present_list = $[0];
+  let new_freq = $[1];
+  let _block$1;
+  let $1 = (() => {
+    let _pipe$4 = is_present_list;
+    return fold(_pipe$4, false, or);
+  })();
+  if (!$1) {
+    _block$1 = new Absent();
+  } else {
+    _block$1 = new Present();
+  }
+  let progress = _block$1;
+  return [
+    (() => {
+      let _pipe$4 = new_freq;
+      return flatten(_pipe$4);
+    })(),
+    progress
+  ];
+}
+function check_progress_with_freq(guess, solution) {
+  let _block;
+  let _pipe = guess;
+  _block = map2(
+    _pipe,
+    solution,
+    (g, s) => {
+      let $2 = g === s;
+      if (!$2) {
+        return new NotSet();
+      } else {
+        return new Correct();
+      }
+    }
+  );
+  let pass_1 = _block;
+  let _block$1;
+  let _pipe$1 = guess;
+  _block$1 = map_fold(_pipe$1, solution, check_with_freqs);
+  let $ = _block$1;
+  let pass_2 = $[1];
+  let _block$2;
+  let _pipe$2 = pass_1;
+  _block$2 = map2(
+    _pipe$2,
+    pass_2,
+    (p1, p2) => {
+      if (p1 instanceof Correct) {
+        return new Correct();
+      } else if (p2 instanceof Present) {
+        return new Present();
+      } else {
+        return new Absent();
+      }
+    }
+  );
+  let final_pass = _block$2;
+  return final_pass;
+}
 
 // build/dev/javascript/temp/msg.mjs
 var PlayerStartGame = class extends CustomType {
@@ -4159,6 +4451,32 @@ var PlayerAddLetter = class extends CustomType {
 };
 var PlayerRemoveLetter = class extends CustomType {
 };
+var PlayerSubmitWordle = class extends CustomType {
+};
+function handle_submit_wordle(model) {
+  let guess = model.guess;
+  let is_full_word = (() => {
+    let _pipe = model.guess;
+    let _pipe$1 = fold(_pipe, "", append2);
+    return string_length(_pipe$1);
+  })() === 5;
+  if (!is_full_word) {
+    return model;
+  } else {
+    let _block;
+    let _pipe = guess;
+    _block = check_progress_with_freq(_pipe, model.solution);
+    let progress = _block;
+    let _record = model;
+    return new Wordle(
+      _record.level,
+      _record.solution,
+      _record.guess,
+      progress,
+      _record.attempts
+    );
+  }
+}
 function update2(model, msg) {
   if (msg instanceof PlayerStartGame) {
     return model;
@@ -4176,7 +4494,7 @@ function update2(model, msg) {
       _record.progress,
       _record.attempts
     );
-  } else {
+  } else if (msg instanceof PlayerRemoveLetter) {
     let _block;
     let _pipe = model.guess;
     _block = remove_letter(_pipe);
@@ -4189,6 +4507,9 @@ function update2(model, msg) {
       _record.progress,
       _record.attempts
     );
+  } else {
+    let _pipe = model;
+    return handle_submit_wordle(_pipe);
   }
 }
 
@@ -4269,25 +4590,42 @@ function level_view() {
     ])
   );
 }
-function single_tile(letter) {
+function single_tile(letter, progress_color) {
   return div(
     toList([
       class$(
-        "w-14 h-14 sm:w-16 sm:h-16 border border-black bg-white flex items-center justify-center text-3xl font-bold uppercase text-black"
+        "w-14 h-14 sm:w-16 sm:h-16 border border-black flex items-center justify-center text-3xl font-bold uppercase text-black " + progress_color
       )
     ]),
     toList([text3(letter)])
   );
 }
-function tiles_view(guess) {
+function tiles_view(guess, progress) {
+  let _block;
+  let _pipe = progress;
+  _block = map(
+    _pipe,
+    (x) => {
+      if (x instanceof NotSet) {
+        return "bg-white";
+      } else if (x instanceof Absent) {
+        return "bg-gray-300";
+      } else if (x instanceof Present) {
+        return "bg-yellow-400";
+      } else {
+        return "bg-green-400";
+      }
+    }
+  );
+  let progress_colors = _block;
   return div(
     toList([class$("flex justify-center py-5 bg-white")]),
     toList([
       div(
         toList([class$("grid grid-cols-5 gap-1.5")]),
         (() => {
-          let _pipe = guess;
-          return map(_pipe, single_tile);
+          let _pipe$1 = guess;
+          return map2(_pipe$1, progress_colors, single_tile);
         })()
       )
     ])
@@ -4333,6 +4671,7 @@ function row_2_view() {
 function enter_key_view() {
   return button(
     toList([
+      on_click(new PlayerSubmitWordle()),
       class$(
         "\n        \n        h-11\n        px-2\n        bg-black\n        text-white\n        border border-black\n        rounded\n        flex items-center justify-center\n        text-xs sm:text-sm font-semibold\n        uppercase\n        hover:bg-neutral-800\n        active:bg-neutral-700\n    "
       )
@@ -4384,7 +4723,7 @@ function view(model) {
     toList([
       title_view(),
       level_view(),
-      tiles_view(model.guess),
+      tiles_view(model.guess, model.progress),
       keyboard_view()
     ])
   );
