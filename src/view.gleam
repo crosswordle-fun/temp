@@ -1,5 +1,209 @@
+import gleam/list
+import gleam/string
+import lustre/attribute
+import lustre/element/html
 import wordle.{type Wordle}
 
-pub fn view(model: Wordle) {
-  todo
+pub fn view(_model: Wordle) {
+  html.body(
+    [attribute.class("min-h-screen bg-white flex flex-col items-center px-2")],
+    [title_view(), level_view(), tiles_view(), keyboard_view()],
+  )
+}
+
+fn title_view() {
+  html.header([attribute.class("w-full pb-3 pt-5 border-b border-black mb-3")], [
+    html.h1(
+      [
+        attribute.class(
+          "text-center text-4xl sm:text-5xl font-semibold text-black tracking-[0.15em] uppercase",
+        ),
+      ],
+      [html.text("CROSSWORDLE")],
+    ),
+  ])
+}
+
+fn level_view() {
+  html.div(
+    [attribute.class("inline-block bg-black text-white px-3 py-1 rounded-full")],
+    [
+      html.p(
+        [
+          attribute.class(
+            "text-xs sm:text-sm font-semibold uppercase tracking-wide",
+          ),
+        ],
+        [
+          html.text(" LVL "),
+          html.span([attribute.class("font-bold")], [html.text("1")]),
+        ],
+      ),
+    ],
+  )
+}
+
+fn tiles_view() {
+  html.div([attribute.class("flex justify-center py-5 bg-white")], [
+    html.div([attribute.class("grid grid-cols-5 gap-1.5")], [
+      html.div(
+        [
+          attribute.class(
+            "w-14 h-14 sm:w-16 sm:h-16 border border-black bg-white flex items-center justify-center text-3xl font-bold uppercase text-black",
+          ),
+        ],
+        [],
+      ),
+      html.div(
+        [
+          attribute.class(
+            "w-14 h-14 sm:w-16 sm:h-16 border border-black bg-white flex items-center justify-center text-3xl font-bold uppercase text-black",
+          ),
+        ],
+        [],
+      ),
+      html.div(
+        [
+          attribute.class(
+            "w-14 h-14 sm:w-16 sm:h-16 border border-black bg-white flex items-center justify-center text-3xl font-bold uppercase text-black",
+          ),
+        ],
+        [],
+      ),
+      html.div(
+        [
+          attribute.class(
+            "w-14 h-14 sm:w-16 sm:h-16 border border-black bg-white flex items-center justify-center text-3xl font-bold uppercase text-black",
+          ),
+        ],
+        [],
+      ),
+      html.div(
+        [
+          attribute.class(
+            "w-14 h-14 sm:w-16 sm:h-16 border border-black bg-white flex items-center justify-center text-3xl font-bold uppercase text-black",
+          ),
+        ],
+        [],
+      ),
+    ]),
+  ])
+}
+
+fn keyboard_view() {
+  html.div(
+    [
+      attribute.class(
+        "w-full max-w-xs sm:max-w-sm flex flex-col items-center gap-y-1.5 p-1 sm:p-2",
+      ),
+    ],
+    [row_1_view(), row_2_view(), row_3_view()],
+  )
+}
+
+fn row_1_view() {
+  "qwertyuiop"
+  |> string.to_graphemes
+  |> list.map(single_keyboard_key_view)
+  |> html.div(
+    [attribute.class("flex justify-center w-full gap-x-1 sm:gap-x-1.5")],
+    _,
+  )
+}
+
+fn row_2_view() {
+  "asdfghjkl"
+  |> string.to_graphemes
+  |> list.map(single_keyboard_key_view)
+  |> html.div(
+    [attribute.class("flex justify-center w-full gap-x-1 sm:gap-x-1.5")],
+    _,
+  )
+}
+
+fn row_3_view() {
+  "zxcvbnm"
+  |> string.to_graphemes
+  |> list.map(single_keyboard_key_view)
+  |> list.append([enter_key_view()])
+  |> list.prepend(delete_key_view())
+  |> html.div(
+    [attribute.class("flex justify-center w-full gap-x-1 sm:gap-x-1.5")],
+    _,
+  )
+}
+
+fn single_keyboard_key_view(single_key: String) {
+  html.button(
+    [
+      attribute.class(
+        "
+        min-w-[2rem]    <!-- Minimum width (32px) - can be adjusted -->
+        h-11            <!-- Height (44px) - common tap target height -->
+        px-2            <!-- Horizontal padding (8px) -->
+        bg-white
+        text-black
+        border border-black
+        rounded         <!-- Slightly less rounded corners -->
+        flex items-center justify-center
+        text-sm sm:text-base font-medium  <!-- Smaller font size -->
+        uppercase
+        hover:bg-neutral-100
+        active:bg-neutral-200
+        focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1
+    ",
+      ),
+    ],
+    [html.text(single_key)],
+  )
+}
+
+fn enter_key_view() {
+  html.button(
+    [
+      attribute.class(
+        "
+        
+        h-11
+        px-2
+        bg-black
+        text-white
+        border border-black
+        rounded
+        flex items-center justify-center
+        text-xs sm:text-sm font-semibold
+        uppercase
+        hover:bg-neutral-800
+        active:bg-neutral-700
+        focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-black focus:ring-offset-1
+    ",
+      ),
+    ],
+    [html.text("ENTER")],
+  )
+}
+
+fn delete_key_view() {
+  html.button(
+    [
+      attribute.class(
+        "
+        flex-grow
+        h-11
+        px-2
+        bg-black
+        text-white
+        border border-black
+        rounded
+        flex items-center justify-center
+        text-xs sm:text-sm font-semibold
+        uppercase
+        hover:bg-neutral-800
+        active:bg-neutral-700
+        focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-black focus:ring-offset-1
+    ",
+      ),
+    ],
+    [html.text("DEL")],
+  )
 }
