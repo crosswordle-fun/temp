@@ -33,8 +33,13 @@ fn handle_submit_wordle(model: Wordle) {
     False -> model
     True -> {
       let progress = guess |> wordle.check_progress_with_freq(model.solution)
-
-      Wordle(..model, progress:)
+      let attempts =
+        model.attempts
+        |> list.append(
+          wordle.Attempt(word: model.guess, progress:) |> list.wrap,
+        )
+      echo attempts
+      Wordle(..model, progress:, attempts:)
     }
   }
 }

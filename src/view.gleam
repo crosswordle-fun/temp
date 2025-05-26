@@ -4,7 +4,7 @@ import lustre/attribute
 import lustre/element/html
 import lustre/event
 import msg
-import wordle.{type Progress, type Wordle}
+import wordle.{type Attempt, type Progress, type Wordle}
 
 pub fn view(model: Wordle) {
   html.body(
@@ -12,7 +12,8 @@ pub fn view(model: Wordle) {
     [
       title_view(),
       level_view(),
-      tiles_view(model.guess, model.progress),
+      attempts_view(model.attempts),
+      guess_view(model),
       keyboard_view(),
     ],
   )
@@ -50,23 +51,32 @@ fn level_view() {
   )
 }
 
+fn attempts_view(attempts: List(Attempt)) {
+  html.div(
+    [
+      attribute.class(
+        "flex flex-col justify-center items-center py-4 px-4 gap-1 bg-white",
+      ),
+    ],
+    attempts
+      |> list.map(fn(attempt) { tiles_view(attempt.word, attempt.progress) }),
+  )
+}
+
+fn guess_view(model: Wordle) {
+  html.div([attribute.class("flex justify-center py-4 bg-white")], [
+    tiles_view(model.guess, model.progress),
+  ])
+}
+
 fn tiles_view(guess: List(String), progress: List(Progress)) {
   let progress_colors =
     progress
-    |> list.map(fn(x) {
-      case x {
-        wordle.NotSet -> "bg-white"
-        wordle.Absent -> "bg-gray-300"
-        wordle.Present -> "bg-yellow-400"
-        wordle.Correct -> "bg-green-400"
-      }
-    })
-  html.div([attribute.class("flex justify-center py-5 bg-white")], [
-    html.div(
-      [attribute.class("grid grid-cols-5 gap-1.5")],
-      guess |> list.map2(progress_colors, single_tile),
-    ),
-  ])
+    |> list.map(progress_to_color)
+  html.div(
+    [attribute.class("flex grid grid-cols-5 gap-1")],
+    guess |> list.map2(progress_colors, single_tile),
+  )
 }
 
 fn single_tile(letter: String, progress_color: String) {
@@ -197,4 +207,13 @@ fn delete_key_view() {
     ],
     [html.text("DEL")],
   )
+}
+
+fn progress_to_color(progress: Progress) -> String {
+  case progress {
+    wordle.NotSet -> "bg-white"
+    wordle.Absent -> "bg-gray-300"
+    wordle.Present -> "bg-yellow-400"
+    wordle.Correct -> "bg-green-400"
+  }
 }

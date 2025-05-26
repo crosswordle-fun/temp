@@ -8,7 +8,7 @@ pub type Wordle {
     solution: List(String),
     guess: List(String),
     progress: List(Progress),
-    attempts: List(List(String)),
+    attempts: List(Attempt),
   )
 }
 
@@ -17,6 +17,10 @@ pub type Progress {
   Absent
   Present
   Correct
+}
+
+pub type Attempt {
+  Attempt(word: List(String), progress: List(Progress))
 }
 
 pub fn init_wordle(_) -> Wordle {
