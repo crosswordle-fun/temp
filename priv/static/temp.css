@@ -747,6 +747,10 @@ video {
   text-transform: uppercase;
 }
 
+.lowercase {
+  text-transform: lowercase;
+}
+
 .tracking-\[0\.15em\] {
   letter-spacing: 0.15em;
 }
