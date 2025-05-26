@@ -3202,9 +3202,9 @@ var Reconciler = class {
   #dispatch = () => {
   };
   #useServerEvents = false;
-  constructor(root3, dispatch, { useServerEvents = false } = {}) {
+  constructor(root3, dispatch2, { useServerEvents = false } = {}) {
     this.#root = root3;
-    this.#dispatch = dispatch;
+    this.#dispatch = dispatch2;
     this.#useServerEvents = useServerEvents;
   }
   mount(vdom) {
@@ -3820,6 +3820,9 @@ var Runtime = class {
     }
   }
 };
+var send = (runtime, message) => {
+  runtime.send(message);
+};
 function makeEffect(synchronous) {
   return {
     synchronous,
@@ -4281,6 +4284,9 @@ function simple(init, update3, view2) {
   };
   return application(init$1, update$1, view2);
 }
+function dispatch(msg) {
+  return new EffectDispatchedMessage(msg);
+}
 function start3(app, selector, start_args) {
   return guard(
     !is_browser(),
@@ -4289,6 +4295,16 @@ function start3(app, selector, start_args) {
       return start(app, selector, start_args);
     }
   );
+}
+
+// build/dev/javascript/temp/js_ffi.mjs
+function on_letter_keypress(callback) {
+  window.addEventListener("keydown", function(event4) {
+    if (/^[a-z]$/i.test(event4.key)) {
+      console.log("Letter typed:", event4.key);
+      callback(event4.key);
+    }
+  });
 }
 
 // build/dev/javascript/temp/wordle.mjs
@@ -4737,12 +4753,21 @@ function main() {
     throw makeError(
       "let_assert",
       "temp",
-      8,
+      9,
       "main",
       "Pattern match failed, no pattern matched the value.",
       { value: $ }
     );
   }
+  let runtime = $[0];
+  on_letter_keypress(
+    (key) => {
+      let _pipe = key;
+      let _pipe$1 = new PlayerAddLetter(_pipe);
+      let _pipe$2 = dispatch(_pipe$1);
+      return send(runtime, _pipe$2);
+    }
+  );
   return void 0;
 }
 
