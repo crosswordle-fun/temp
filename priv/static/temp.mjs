@@ -294,10 +294,10 @@ var Error = class extends Result {
   }
 };
 function isEqual(x, y) {
-  let values2 = [x, y];
-  while (values2.length) {
-    let a = values2.pop();
-    let b = values2.pop();
+  let values3 = [x, y];
+  while (values3.length) {
+    let a = values3.pop();
+    let b = values3.pop();
     if (a === b) continue;
     if (!isObject(a) || !isObject(b)) return false;
     let unequal = !structurallyCompatibleObjects(a, b) || unequalDates(a, b) || unequalBuffers(a, b) || unequalArrays(a, b) || unequalMaps(a, b) || unequalSets(a, b) || unequalRegExps(a, b);
@@ -312,7 +312,7 @@ function isEqual(x, y) {
     }
     let [keys2, get2] = getters(a);
     for (let k of keys2(a)) {
-      values2.push(get2(a, k), get2(b, k));
+      values3.push(get2(a, k), get2(b, k));
     }
   }
   return true;
@@ -1529,6 +1529,11 @@ function run(data, decoder) {
     return new Error(errors);
   }
 }
+function success(data) {
+  return new Decoder((_) => {
+    return [data, toList([])];
+  });
+}
 function map2(decoder, transformer) {
   return new Decoder(
     (d) => {
@@ -1591,15 +1596,15 @@ var trim_end_regex = /* @__PURE__ */ new RegExp(`[${unicode_whitespaces}]*$`);
 function new_map() {
   return Dict.new();
 }
-function map_get(map3, key) {
-  const value = map3.get(key, NOT_FOUND);
+function map_get(map4, key) {
+  const value = map4.get(key, NOT_FOUND);
   if (value === NOT_FOUND) {
     return new Error(Nil);
   }
   return new Ok(value);
 }
-function map_insert(key, value, map3) {
-  return map3.set(key, value);
+function map_insert(key, value, map4) {
+  return map4.set(key, value);
 }
 
 // build/dev/javascript/gleam_stdlib/gleam/dict.mjs
@@ -1778,6 +1783,19 @@ function attribute(name, value) {
 }
 var property_kind = 1;
 var event_kind = 2;
+function event(name, handler, include, prevent_default, stop_propagation, immediate2, debounce, throttle) {
+  return new Event2(
+    event_kind,
+    name,
+    handler,
+    include,
+    prevent_default,
+    stop_propagation,
+    immediate2,
+    debounce,
+    throttle
+  );
+}
 
 // build/dev/javascript/lustre/lustre/attribute.mjs
 function attribute2(name, value) {
@@ -1809,22 +1827,22 @@ function none() {
 function empty2() {
   return null;
 }
-function get(map3, key) {
-  const value = map3?.get(key);
+function get(map4, key) {
+  const value = map4?.get(key);
   if (value != null) {
     return new Ok(value);
   } else {
     return new Error(void 0);
   }
 }
-function insert3(map3, key, value) {
-  map3 ??= /* @__PURE__ */ new Map();
-  map3.set(key, value);
-  return map3;
+function insert3(map4, key, value) {
+  map4 ??= /* @__PURE__ */ new Map();
+  map4.set(key, value);
+  return map4;
 }
-function remove(map3, key) {
-  map3?.delete(key);
-  return map3;
+function remove(map4, key) {
+  map4?.delete(key);
+  return map4;
 }
 
 // build/dev/javascript/lustre/lustre/vdom/path.mjs
@@ -1911,8 +1929,8 @@ function matches(path, candidates) {
   }
 }
 var separator_event = "\f";
-function event(path, event2) {
-  return do_to_string(path, toList([separator_event, event2]));
+function event2(path, event4) {
+  return do_to_string(path, toList([separator_event, event4]));
 }
 
 // build/dev/javascript/lustre/lustre/vdom/vnode.mjs
@@ -2305,12 +2323,12 @@ function diff_attributes(loop$controlled, loop$path, loop$mapper, loop$events, l
     let mapper = loop$mapper;
     let events = loop$events;
     let old = loop$old;
-    let new$7 = loop$new;
+    let new$8 = loop$new;
     let added = loop$added;
     let removed = loop$removed;
-    if (old.hasLength(0) && new$7.hasLength(0)) {
+    if (old.hasLength(0) && new$8.hasLength(0)) {
       return new AttributeChange(added, removed, events);
-    } else if (old.atLeastLength(1) && old.head instanceof Event2 && new$7.hasLength(0)) {
+    } else if (old.atLeastLength(1) && old.head instanceof Event2 && new$8.hasLength(0)) {
       let prev = old.head;
       let name = old.head.name;
       let old$1 = old.tail;
@@ -2321,10 +2339,10 @@ function diff_attributes(loop$controlled, loop$path, loop$mapper, loop$events, l
       loop$mapper = mapper;
       loop$events = events$1;
       loop$old = old$1;
-      loop$new = new$7;
+      loop$new = new$8;
       loop$added = added;
       loop$removed = removed$1;
-    } else if (old.atLeastLength(1) && new$7.hasLength(0)) {
+    } else if (old.atLeastLength(1) && new$8.hasLength(0)) {
       let prev = old.head;
       let old$1 = old.tail;
       let removed$1 = prepend(prev, removed);
@@ -2333,14 +2351,14 @@ function diff_attributes(loop$controlled, loop$path, loop$mapper, loop$events, l
       loop$mapper = mapper;
       loop$events = events;
       loop$old = old$1;
-      loop$new = new$7;
+      loop$new = new$8;
       loop$added = added;
       loop$removed = removed$1;
-    } else if (old.hasLength(0) && new$7.atLeastLength(1) && new$7.head instanceof Event2) {
-      let next = new$7.head;
-      let name = new$7.head.name;
-      let handler = new$7.head.handler;
-      let new$1 = new$7.tail;
+    } else if (old.hasLength(0) && new$8.atLeastLength(1) && new$8.head instanceof Event2) {
+      let next = new$8.head;
+      let name = new$8.head.name;
+      let handler = new$8.head.handler;
+      let new$1 = new$8.tail;
       let added$1 = prepend(next, added);
       let events$1 = add_event(events, mapper, path, name, handler);
       loop$controlled = controlled;
@@ -2351,9 +2369,9 @@ function diff_attributes(loop$controlled, loop$path, loop$mapper, loop$events, l
       loop$new = new$1;
       loop$added = added$1;
       loop$removed = removed;
-    } else if (old.hasLength(0) && new$7.atLeastLength(1)) {
-      let next = new$7.head;
-      let new$1 = new$7.tail;
+    } else if (old.hasLength(0) && new$8.atLeastLength(1)) {
+      let next = new$8.head;
+      let new$1 = new$8.tail;
       let added$1 = prepend(next, added);
       loop$controlled = controlled;
       loop$path = path;
@@ -2366,8 +2384,8 @@ function diff_attributes(loop$controlled, loop$path, loop$mapper, loop$events, l
     } else {
       let prev = old.head;
       let remaining_old = old.tail;
-      let next = new$7.head;
-      let remaining_new = new$7.tail;
+      let next = new$8.head;
+      let remaining_new = new$8.tail;
       let $ = compare3(prev, next);
       if (prev instanceof Attribute && $ instanceof Eq && next instanceof Attribute) {
         let _block;
@@ -2519,7 +2537,7 @@ function diff_attributes(loop$controlled, loop$path, loop$mapper, loop$events, l
         loop$mapper = mapper;
         loop$events = events$1;
         loop$old = remaining_old;
-        loop$new = new$7;
+        loop$new = new$8;
         loop$added = added;
         loop$removed = removed$1;
       } else {
@@ -2529,7 +2547,7 @@ function diff_attributes(loop$controlled, loop$path, loop$mapper, loop$events, l
         loop$mapper = mapper;
         loop$events = events;
         loop$old = remaining_old;
-        loop$new = new$7;
+        loop$new = new$8;
         loop$added = added;
         loop$removed = removed$1;
       }
@@ -2540,7 +2558,7 @@ function do_diff(loop$old, loop$old_keyed, loop$new, loop$new_keyed, loop$moved,
   while (true) {
     let old = loop$old;
     let old_keyed = loop$old_keyed;
-    let new$7 = loop$new;
+    let new$8 = loop$new;
     let new_keyed = loop$new_keyed;
     let moved = loop$moved;
     let moved_offset = loop$moved_offset;
@@ -2552,12 +2570,12 @@ function do_diff(loop$old, loop$old_keyed, loop$new, loop$new_keyed, loop$moved,
     let children = loop$children;
     let mapper = loop$mapper;
     let events = loop$events;
-    if (old.hasLength(0) && new$7.hasLength(0)) {
+    if (old.hasLength(0) && new$8.hasLength(0)) {
       return new Diff(
         new Patch(patch_index, removed, changes, children),
         events
       );
-    } else if (old.atLeastLength(1) && new$7.hasLength(0)) {
+    } else if (old.atLeastLength(1) && new$8.hasLength(0)) {
       let prev = old.head;
       let old$1 = old.tail;
       let _block;
@@ -2571,7 +2589,7 @@ function do_diff(loop$old, loop$old_keyed, loop$new, loop$new_keyed, loop$moved,
       let events$1 = remove_child(events, path, node_index, prev);
       loop$old = old$1;
       loop$old_keyed = old_keyed;
-      loop$new = new$7;
+      loop$new = new$8;
       loop$new_keyed = new_keyed;
       loop$moved = moved;
       loop$moved_offset = moved_offset;
@@ -2583,32 +2601,32 @@ function do_diff(loop$old, loop$old_keyed, loop$new, loop$new_keyed, loop$moved,
       loop$children = children;
       loop$mapper = mapper;
       loop$events = events$1;
-    } else if (old.hasLength(0) && new$7.atLeastLength(1)) {
+    } else if (old.hasLength(0) && new$8.atLeastLength(1)) {
       let events$1 = add_children(
         events,
         mapper,
         path,
         node_index,
-        new$7
+        new$8
       );
-      let insert5 = insert4(new$7, node_index - moved_offset);
+      let insert5 = insert4(new$8, node_index - moved_offset);
       let changes$1 = prepend(insert5, changes);
       return new Diff(
         new Patch(patch_index, removed, changes$1, children),
         events$1
       );
-    } else if (old.atLeastLength(1) && new$7.atLeastLength(1) && old.head.key !== new$7.head.key) {
+    } else if (old.atLeastLength(1) && new$8.atLeastLength(1) && old.head.key !== new$8.head.key) {
       let prev = old.head;
       let old_remaining = old.tail;
-      let next = new$7.head;
-      let new_remaining = new$7.tail;
+      let next = new$8.head;
+      let new_remaining = new$8.tail;
       let next_did_exist = get(old_keyed, next.key);
       let prev_does_exist = get(new_keyed, prev.key);
       let prev_has_moved = contains(moved, prev.key);
       if (prev_does_exist.isOk() && next_did_exist.isOk() && prev_has_moved) {
         loop$old = old_remaining;
         loop$old_keyed = old_keyed;
-        loop$new = new$7;
+        loop$new = new$8;
         loop$new_keyed = new_keyed;
         loop$moved = moved;
         loop$moved_offset = moved_offset - advance(prev);
@@ -2630,7 +2648,7 @@ function do_diff(loop$old, loop$old_keyed, loop$new, loop$new_keyed, loop$moved,
         let moved_offset$1 = moved_offset + count;
         loop$old = prepend(match, old);
         loop$old_keyed = old_keyed;
-        loop$new = new$7;
+        loop$new = new$8;
         loop$new_keyed = new_keyed;
         loop$moved = moved$1;
         loop$moved_offset = moved_offset$1;
@@ -2650,7 +2668,7 @@ function do_diff(loop$old, loop$old_keyed, loop$new, loop$new_keyed, loop$moved,
         let changes$1 = prepend(remove3, changes);
         loop$old = old_remaining;
         loop$old_keyed = old_keyed;
-        loop$new = new$7;
+        loop$new = new$8;
         loop$new_keyed = new_keyed;
         loop$moved = moved;
         loop$moved_offset = moved_offset$1;
@@ -2706,11 +2724,11 @@ function do_diff(loop$old, loop$old_keyed, loop$new, loop$new_keyed, loop$moved,
         loop$mapper = mapper;
         loop$events = events$1;
       }
-    } else if (old.atLeastLength(1) && old.head instanceof Fragment && new$7.atLeastLength(1) && new$7.head instanceof Fragment) {
+    } else if (old.atLeastLength(1) && old.head instanceof Fragment && new$8.atLeastLength(1) && new$8.head instanceof Fragment) {
       let prev = old.head;
       let old$1 = old.tail;
-      let next = new$7.head;
-      let new$1 = new$7.tail;
+      let next = new$8.head;
+      let new$1 = new$8.tail;
       let node_index$1 = node_index + 1;
       let prev_count = prev.children_count;
       let next_count = next.children_count;
@@ -2755,11 +2773,11 @@ function do_diff(loop$old, loop$old_keyed, loop$new, loop$new_keyed, loop$moved,
       loop$children = child.patch.children;
       loop$mapper = mapper;
       loop$events = child.events;
-    } else if (old.atLeastLength(1) && old.head instanceof Element && new$7.atLeastLength(1) && new$7.head instanceof Element && (old.head.namespace === new$7.head.namespace && old.head.tag === new$7.head.tag)) {
+    } else if (old.atLeastLength(1) && old.head instanceof Element && new$8.atLeastLength(1) && new$8.head instanceof Element && (old.head.namespace === new$8.head.namespace && old.head.tag === new$8.head.tag)) {
       let prev = old.head;
       let old$1 = old.tail;
-      let next = new$7.head;
-      let new$1 = new$7.tail;
+      let next = new$8.head;
+      let new$1 = new$8.tail;
       let composed_mapper = compose_mapper(mapper, next.mapper);
       let child_path = add2(path, node_index, next.key);
       let controlled = is_controlled(
@@ -2826,11 +2844,11 @@ function do_diff(loop$old, loop$old_keyed, loop$new, loop$new_keyed, loop$moved,
       loop$children = children$1;
       loop$mapper = mapper;
       loop$events = child.events;
-    } else if (old.atLeastLength(1) && old.head instanceof Text && new$7.atLeastLength(1) && new$7.head instanceof Text && old.head.content === new$7.head.content) {
+    } else if (old.atLeastLength(1) && old.head instanceof Text && new$8.atLeastLength(1) && new$8.head instanceof Text && old.head.content === new$8.head.content) {
       let prev = old.head;
       let old$1 = old.tail;
-      let next = new$7.head;
-      let new$1 = new$7.tail;
+      let next = new$8.head;
+      let new$1 = new$8.tail;
       loop$old = old$1;
       loop$old_keyed = old_keyed;
       loop$new = new$1;
@@ -2845,10 +2863,10 @@ function do_diff(loop$old, loop$old_keyed, loop$new, loop$new_keyed, loop$moved,
       loop$children = children;
       loop$mapper = mapper;
       loop$events = events;
-    } else if (old.atLeastLength(1) && old.head instanceof Text && new$7.atLeastLength(1) && new$7.head instanceof Text) {
+    } else if (old.atLeastLength(1) && old.head instanceof Text && new$8.atLeastLength(1) && new$8.head instanceof Text) {
       let old$1 = old.tail;
-      let next = new$7.head;
-      let new$1 = new$7.tail;
+      let next = new$8.head;
+      let new$1 = new$8.tail;
       let child = new$4(
         node_index,
         0,
@@ -2869,11 +2887,11 @@ function do_diff(loop$old, loop$old_keyed, loop$new, loop$new_keyed, loop$moved,
       loop$children = prepend(child, children);
       loop$mapper = mapper;
       loop$events = events;
-    } else if (old.atLeastLength(1) && old.head instanceof UnsafeInnerHtml && new$7.atLeastLength(1) && new$7.head instanceof UnsafeInnerHtml) {
+    } else if (old.atLeastLength(1) && old.head instanceof UnsafeInnerHtml && new$8.atLeastLength(1) && new$8.head instanceof UnsafeInnerHtml) {
       let prev = old.head;
       let old$1 = old.tail;
-      let next = new$7.head;
-      let new$1 = new$7.tail;
+      let next = new$8.head;
+      let new$1 = new$8.tail;
       let composed_mapper = compose_mapper(mapper, next.mapper);
       let child_path = add2(path, node_index, next.key);
       let $ = diff_attributes(
@@ -2934,8 +2952,8 @@ function do_diff(loop$old, loop$old_keyed, loop$new, loop$new_keyed, loop$moved,
     } else {
       let prev = old.head;
       let old_remaining = old.tail;
-      let next = new$7.head;
-      let new_remaining = new$7.tail;
+      let next = new$8.head;
+      let new_remaining = new$8.tail;
       let prev_count = advance(prev);
       let next_count = advance(next);
       let change = replace2(node_index - moved_offset, prev_count, next);
@@ -2961,11 +2979,11 @@ function do_diff(loop$old, loop$old_keyed, loop$new, loop$new_keyed, loop$moved,
     }
   }
 }
-function diff(events, old, new$7) {
+function diff(events, old, new$8) {
   return do_diff(
     toList([old]),
     empty2(),
-    toList([new$7]),
+    toList([new$8]),
     empty2(),
     empty_set(),
     0,
@@ -3226,12 +3244,12 @@ var Reconciler = class {
           clearTimeout(debouncers.get(name)?.timeout);
           debouncers.delete(name);
         }
-        handlers.set(name, (event2) => {
-          if (prevent) event2.preventDefault();
-          if (stop) event2.stopPropagation();
-          const type = event2.type;
+        handlers.set(name, (event4) => {
+          if (prevent) event4.preventDefault();
+          if (stop) event4.stopPropagation();
+          const type = event4.type;
           let path = "";
-          let pathNode = event2.currentTarget;
+          let pathNode = event4.currentTarget;
           while (pathNode !== this.#root) {
             const key = pathNode[meta].key;
             const parent = pathNode.parentNode;
@@ -3248,24 +3266,24 @@ var Reconciler = class {
             pathNode = parent;
           }
           path = path.slice(1);
-          const data = this.#useServerEvents ? createServerEvent(event2, include ?? []) : event2;
+          const data = this.#useServerEvents ? createServerEvent(event4, include ?? []) : event4;
           const throttle = throttles.get(type);
           if (throttle) {
             const now = Date.now();
             const last = throttle.last || 0;
             if (now > last + throttle.delay) {
               throttle.last = now;
-              throttle.lastEvent = event2;
+              throttle.lastEvent = event4;
               this.#dispatch(data, path, type, immediate2);
             } else {
-              event2.preventDefault();
+              event4.preventDefault();
             }
           }
           const debounce = debouncers.get(type);
           if (debounce) {
             clearTimeout(debounce.timeout);
             debounce.timeout = setTimeout(() => {
-              if (event2 === throttles.get(type)?.lastEvent) return;
+              if (event4 === throttles.get(type)?.lastEvent) return;
               this.#dispatch(data, path, type, immediate2);
             }, debounce.delay);
           } else {
@@ -3324,26 +3342,26 @@ var initialiseMetadata = (parent, node, key = "") => {
   }
 };
 var getKeyedChild = (node, key) => node[meta].keyedChildren.get(key).deref();
-var handleEvent = (event2) => {
-  const target = event2.currentTarget;
-  const handler = target[meta].handlers.get(event2.type);
-  if (event2.type === "submit") {
-    event2.detail ??= {};
-    event2.detail.formData = [...new FormData(event2.target).entries()];
+var handleEvent = (event4) => {
+  const target = event4.currentTarget;
+  const handler = target[meta].handlers.get(event4.type);
+  if (event4.type === "submit") {
+    event4.detail ??= {};
+    event4.detail.formData = [...new FormData(event4.target).entries()];
   }
-  handler(event2);
+  handler(event4);
 };
-var createServerEvent = (event2, include = []) => {
+var createServerEvent = (event4, include = []) => {
   const data = {};
-  if (event2.type === "input" || event2.type === "change") {
+  if (event4.type === "input" || event4.type === "change") {
     include.push("target.value");
   }
-  if (event2.type === "submit") {
+  if (event4.type === "submit") {
     include.push("detail.formData");
   }
   for (const property3 of include) {
     const path = property3.split(".");
-    for (let i = 0, input = event2, output = data; i < path.length; i++) {
+    for (let i = 0, input = event4, output = data; i < path.length; i++) {
       if (i === path.length - 1) {
         output[path[i]] = input[path[i]];
         break;
@@ -3498,8 +3516,8 @@ var Runtime = class {
     this.#model = model;
     this.#view = view2;
     this.#update = update3;
-    this.#reconciler = new Reconciler(this.root, (event2, path, name) => {
-      const [events, msg] = handle(this.#events, path, name, event2);
+    this.#reconciler = new Reconciler(this.root, (event4, path, name) => {
+      const [events, msg] = handle(this.#events, path, name, event4);
       this.#events = events;
       if (msg.isOk()) {
         this.dispatch(msg[0], false);
@@ -3525,10 +3543,10 @@ var Runtime = class {
       this.#tick(effects);
     }
   }
-  emit(event2, data) {
+  emit(event4, data) {
     const target = this.root.host ?? this.root;
     target.dispatchEvent(
-      new CustomEvent(event2, {
+      new CustomEvent(event4, {
         detail: data,
         bubbles: true,
         composed: true
@@ -3550,7 +3568,7 @@ var Runtime = class {
   #shouldFlush = false;
   #actions = {
     dispatch: (msg, immediate2) => this.dispatch(msg, immediate2),
-    emit: (event2, data) => this.emit(event2, data),
+    emit: (event4, data) => this.emit(event4, data),
     select: () => {
     },
     root: () => this.root
@@ -3646,7 +3664,7 @@ function tick(events) {
   );
 }
 function do_remove_event(handlers, path, name) {
-  return remove(handlers, event(path, name));
+  return remove(handlers, event2(path, name));
 }
 function remove_event(events, path, name) {
   let handlers = do_remove_event(events.handlers, path, name);
@@ -3671,7 +3689,7 @@ function remove_attributes(handlers, path, attributes) {
     }
   );
 }
-function handle(events, path, name, event2) {
+function handle(events, path, name, event4) {
   let next_dispatched_paths = prepend(path, events.next_dispatched_paths);
   let _block;
   let _record = events;
@@ -3687,7 +3705,7 @@ function handle(events, path, name, event2) {
   );
   if ($.isOk()) {
     let handler = $[0];
-    return [events$1, run(event2, handler)];
+    return [events$1, run(event4, handler)];
   } else {
     return [events$1, new Error(toList([]))];
   }
@@ -3698,7 +3716,7 @@ function has_dispatched_events(events, path) {
 function do_add_event(handlers, mapper, path, name, handler) {
   return insert3(
     handlers,
-    event(path, name),
+    event2(path, name),
     map2(handler, identity2(mapper))
   );
 }
@@ -4030,8 +4048,8 @@ var Spa = class _Spa {
   dispatch(msg, immediate2) {
     this.#runtime.dispatch(msg, immediate2);
   }
-  emit(event2, data) {
-    this.#runtime.emit(event2, data);
+  emit(event4, data) {
+    this.#runtime.emit(event4, data);
   }
 };
 var start = Spa.start;
@@ -4100,12 +4118,114 @@ function init_wordle(_) {
   let attempts = toList([]);
   return new Wordle(level, solution, guess, progress, attempts);
 }
+function add_letter(word, letter) {
+  if (word.hasLength(0)) {
+    return word;
+  } else if (word.atLeastLength(1) && word.head === "") {
+    let rest = word.tail;
+    return prepend(letter, rest);
+  } else {
+    let first = word.head;
+    let rest = word.tail;
+    return prepend(first, add_letter(rest, letter));
+  }
+}
+function remove_letter(word) {
+  if (word.hasLength(0)) {
+    return word;
+  } else if (word.atLeastLength(1) && word.head === "") {
+    return word;
+  } else if (word.atLeastLength(2) && word.tail.head === "") {
+    let rest = word.tail.tail;
+    return prepend("", prepend("", rest));
+  } else if (word.hasLength(2)) {
+    let a = word.head;
+    return toList([a, ""]);
+  } else {
+    let a = word.head;
+    let rest = word.tail;
+    return prepend(a, remove_letter(rest));
+  }
+}
 
 // build/dev/javascript/temp/msg.mjs
-function update2(model, msg) {
-  {
-    return model;
+var PlayerStartGame = class extends CustomType {
+};
+var PlayerAddLetter = class extends CustomType {
+  constructor(letter) {
+    super();
+    this.letter = letter;
   }
+};
+var PlayerRemoveLetter = class extends CustomType {
+};
+function update2(model, msg) {
+  if (msg instanceof PlayerStartGame) {
+    return model;
+  } else if (msg instanceof PlayerAddLetter) {
+    let letter = msg.letter;
+    let _block;
+    let _pipe = model.guess;
+    _block = add_letter(_pipe, letter);
+    let new_guess = _block;
+    let _record = model;
+    return new Wordle(
+      _record.level,
+      _record.solution,
+      new_guess,
+      _record.progress,
+      _record.attempts
+    );
+  } else {
+    let _block;
+    let _pipe = model.guess;
+    _block = remove_letter(_pipe);
+    let new_guess = _block;
+    let _record = model;
+    return new Wordle(
+      _record.level,
+      _record.solution,
+      new_guess,
+      _record.progress,
+      _record.attempts
+    );
+  }
+}
+
+// build/dev/javascript/lustre/lustre/event.mjs
+function is_immediate_event(name) {
+  if (name === "input") {
+    return true;
+  } else if (name === "change") {
+    return true;
+  } else if (name === "focus") {
+    return true;
+  } else if (name === "focusin") {
+    return true;
+  } else if (name === "focusout") {
+    return true;
+  } else if (name === "blur") {
+    return true;
+  } else if (name === "select") {
+    return true;
+  } else {
+    return false;
+  }
+}
+function on(name, handler) {
+  return event(
+    name,
+    handler,
+    empty_list,
+    false,
+    false,
+    is_immediate_event(name),
+    0,
+    0
+  );
+}
+function on_click(msg) {
+  return on("click", success(msg));
 }
 
 // build/dev/javascript/temp/view.mjs
@@ -4149,54 +4269,26 @@ function level_view() {
     ])
   );
 }
-function tiles_view() {
+function single_tile(letter) {
+  return div(
+    toList([
+      class$(
+        "w-14 h-14 sm:w-16 sm:h-16 border border-black bg-white flex items-center justify-center text-3xl font-bold uppercase text-black"
+      )
+    ]),
+    toList([text3(letter)])
+  );
+}
+function tiles_view(guess) {
   return div(
     toList([class$("flex justify-center py-5 bg-white")]),
     toList([
       div(
         toList([class$("grid grid-cols-5 gap-1.5")]),
-        toList([
-          div(
-            toList([
-              class$(
-                "w-14 h-14 sm:w-16 sm:h-16 border border-black bg-white flex items-center justify-center text-3xl font-bold uppercase text-black"
-              )
-            ]),
-            toList([])
-          ),
-          div(
-            toList([
-              class$(
-                "w-14 h-14 sm:w-16 sm:h-16 border border-black bg-white flex items-center justify-center text-3xl font-bold uppercase text-black"
-              )
-            ]),
-            toList([])
-          ),
-          div(
-            toList([
-              class$(
-                "w-14 h-14 sm:w-16 sm:h-16 border border-black bg-white flex items-center justify-center text-3xl font-bold uppercase text-black"
-              )
-            ]),
-            toList([])
-          ),
-          div(
-            toList([
-              class$(
-                "w-14 h-14 sm:w-16 sm:h-16 border border-black bg-white flex items-center justify-center text-3xl font-bold uppercase text-black"
-              )
-            ]),
-            toList([])
-          ),
-          div(
-            toList([
-              class$(
-                "w-14 h-14 sm:w-16 sm:h-16 border border-black bg-white flex items-center justify-center text-3xl font-bold uppercase text-black"
-              )
-            ]),
-            toList([])
-          )
-        ])
+        (() => {
+          let _pipe = guess;
+          return map(_pipe, single_tile);
+        })()
       )
     ])
   );
@@ -4204,6 +4296,7 @@ function tiles_view() {
 function key_view(single_key) {
   return button(
     toList([
+      on_click(new PlayerAddLetter(single_key)),
       class$(
         "\n        min-w-[2rem]    <!-- Minimum width (32px) - can be adjusted -->\n        h-11            <!-- Height (44px) - common tap target height -->\n        px-2            <!-- Horizontal padding (8px) -->\n        bg-white\n        text-black\n        border border-black\n        rounded         <!-- Slightly less rounded corners -->\n        flex items-center justify-center\n        text-sm sm:text-base font-medium  <!-- Smaller font size -->\n        uppercase\n        hover:bg-neutral-100\n        active:bg-neutral-200\n    "
       )
@@ -4250,6 +4343,7 @@ function enter_key_view() {
 function delete_key_view() {
   return button(
     toList([
+      on_click(new PlayerRemoveLetter()),
       class$(
         "\n        flex-grow\n        h-11\n        px-2\n        bg-black\n        text-white\n        border border-black\n        rounded\n        flex items-center justify-center\n        text-xs sm:text-sm font-semibold\n        uppercase\n        hover:bg-neutral-800\n        active:bg-neutral-700\n    "
       )
@@ -4282,12 +4376,17 @@ function keyboard_view() {
     toList([row_1_view(), row_2_view(), row_3_view()])
   );
 }
-function view(_) {
+function view(model) {
   return body(
     toList([
       class$("min-h-screen bg-white flex flex-col items-center px-2")
     ]),
-    toList([title_view(), level_view(), tiles_view(), keyboard_view()])
+    toList([
+      title_view(),
+      level_view(),
+      tiles_view(model.guess),
+      keyboard_view()
+    ])
   );
 }
 
