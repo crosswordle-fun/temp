@@ -104,7 +104,7 @@ fn keyboard_view() {
 fn row_1_view() {
   "qwertyuiop"
   |> string.to_graphemes
-  |> list.map(single_keyboard_key_view)
+  |> list.map(key_view)
   |> html.div(
     [attribute.class("flex justify-center w-full gap-x-1 sm:gap-x-1.5")],
     _,
@@ -114,7 +114,7 @@ fn row_1_view() {
 fn row_2_view() {
   "asdfghjkl"
   |> string.to_graphemes
-  |> list.map(single_keyboard_key_view)
+  |> list.map(key_view)
   |> html.div(
     [attribute.class("flex justify-center w-full gap-x-1 sm:gap-x-1.5")],
     _,
@@ -124,7 +124,7 @@ fn row_2_view() {
 fn row_3_view() {
   "zxcvbnm"
   |> string.to_graphemes
-  |> list.map(single_keyboard_key_view)
+  |> list.map(key_view)
   |> list.append([enter_key_view()])
   |> list.prepend(delete_key_view())
   |> html.div(
@@ -133,7 +133,7 @@ fn row_3_view() {
   )
 }
 
-fn single_keyboard_key_view(single_key: String) {
+fn key_view(single_key: String) {
   html.button(
     [
       attribute.class(
@@ -150,7 +150,6 @@ fn single_keyboard_key_view(single_key: String) {
         uppercase
         hover:bg-neutral-100
         active:bg-neutral-200
-        focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1
     ",
       ),
     ],
@@ -175,7 +174,6 @@ fn enter_key_view() {
         uppercase
         hover:bg-neutral-800
         active:bg-neutral-700
-        focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-black focus:ring-offset-1
     ",
       ),
     ],
@@ -200,7 +198,6 @@ fn delete_key_view() {
         uppercase
         hover:bg-neutral-800
         active:bg-neutral-700
-        focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-black focus:ring-offset-1
     ",
       ),
     ],

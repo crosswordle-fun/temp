@@ -4201,11 +4201,11 @@ function tiles_view() {
     ])
   );
 }
-function single_keyboard_key_view(single_key) {
+function key_view(single_key) {
   return button(
     toList([
       class$(
-        "\n        min-w-[2rem]    <!-- Minimum width (32px) - can be adjusted -->\n        h-11            <!-- Height (44px) - common tap target height -->\n        px-2            <!-- Horizontal padding (8px) -->\n        bg-white\n        text-black\n        border border-black\n        rounded         <!-- Slightly less rounded corners -->\n        flex items-center justify-center\n        text-sm sm:text-base font-medium  <!-- Smaller font size -->\n        uppercase\n        hover:bg-neutral-100\n        active:bg-neutral-200\n        focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1\n    "
+        "\n        min-w-[2rem]    <!-- Minimum width (32px) - can be adjusted -->\n        h-11            <!-- Height (44px) - common tap target height -->\n        px-2            <!-- Horizontal padding (8px) -->\n        bg-white\n        text-black\n        border border-black\n        rounded         <!-- Slightly less rounded corners -->\n        flex items-center justify-center\n        text-sm sm:text-base font-medium  <!-- Smaller font size -->\n        uppercase\n        hover:bg-neutral-100\n        active:bg-neutral-200\n    "
       )
     ]),
     toList([text3(single_key)])
@@ -4214,7 +4214,7 @@ function single_keyboard_key_view(single_key) {
 function row_1_view() {
   let _pipe = "qwertyuiop";
   let _pipe$1 = graphemes(_pipe);
-  let _pipe$2 = map(_pipe$1, single_keyboard_key_view);
+  let _pipe$2 = map(_pipe$1, key_view);
   return ((_capture) => {
     return div(
       toList([
@@ -4227,7 +4227,7 @@ function row_1_view() {
 function row_2_view() {
   let _pipe = "asdfghjkl";
   let _pipe$1 = graphemes(_pipe);
-  let _pipe$2 = map(_pipe$1, single_keyboard_key_view);
+  let _pipe$2 = map(_pipe$1, key_view);
   return ((_capture) => {
     return div(
       toList([
@@ -4241,7 +4241,7 @@ function enter_key_view() {
   return button(
     toList([
       class$(
-        "\n        \n        h-11\n        px-2\n        bg-black\n        text-white\n        border border-black\n        rounded\n        flex items-center justify-center\n        text-xs sm:text-sm font-semibold\n        uppercase\n        hover:bg-neutral-800\n        active:bg-neutral-700\n        focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-black focus:ring-offset-1\n    "
+        "\n        \n        h-11\n        px-2\n        bg-black\n        text-white\n        border border-black\n        rounded\n        flex items-center justify-center\n        text-xs sm:text-sm font-semibold\n        uppercase\n        hover:bg-neutral-800\n        active:bg-neutral-700\n    "
       )
     ]),
     toList([text3("ENTER")])
@@ -4251,7 +4251,7 @@ function delete_key_view() {
   return button(
     toList([
       class$(
-        "\n        flex-grow\n        h-11\n        px-2\n        bg-black\n        text-white\n        border border-black\n        rounded\n        flex items-center justify-center\n        text-xs sm:text-sm font-semibold\n        uppercase\n        hover:bg-neutral-800\n        active:bg-neutral-700\n        focus:outline-none focus:ring-1 focus:ring-white focus:ring-offset-black focus:ring-offset-1\n    "
+        "\n        flex-grow\n        h-11\n        px-2\n        bg-black\n        text-white\n        border border-black\n        rounded\n        flex items-center justify-center\n        text-xs sm:text-sm font-semibold\n        uppercase\n        hover:bg-neutral-800\n        active:bg-neutral-700\n    "
       )
     ]),
     toList([text3("DEL")])
@@ -4260,7 +4260,7 @@ function delete_key_view() {
 function row_3_view() {
   let _pipe = "zxcvbnm";
   let _pipe$1 = graphemes(_pipe);
-  let _pipe$2 = map(_pipe$1, single_keyboard_key_view);
+  let _pipe$2 = map(_pipe$1, key_view);
   let _pipe$3 = append(_pipe$2, toList([enter_key_view()]));
   let _pipe$4 = prepend2(_pipe$3, delete_key_view());
   return ((_capture) => {
