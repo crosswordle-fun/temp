@@ -5413,7 +5413,8 @@ function view(model) {
   _block = is_empty(_pipe);
   let is_game_over = _block;
   let _block$1;
-  if (!is_game_over) {
+  let $ = model.solved && is_game_over;
+  if (!$) {
     _block$1 = div(
       toList([class$("flex flex-col items-center")]),
       toList([

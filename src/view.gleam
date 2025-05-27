@@ -9,7 +9,7 @@ import wordle.{type Attempt, type Progress, type Wordle}
 
 pub fn view(model: Wordle) {
   let is_game_over = model.word_list |> list.is_empty
-  let game_view = case is_game_over {
+  let game_view = case model.solved && is_game_over {
     False -> {
       html.div([attribute.class("flex flex-col items-center")], [
         level_view(model.level),
