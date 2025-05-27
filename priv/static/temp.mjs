@@ -4588,13 +4588,14 @@ function on_keypress(callback) {
 
 // build/dev/javascript/temp/wordle.mjs
 var Wordle = class extends CustomType {
-  constructor(level, solution, guess, progress, attempts) {
+  constructor(level, solution, guess, progress, attempts, word_list) {
     super();
     this.level = level;
     this.solution = solution;
     this.guess = guess;
     this.progress = progress;
     this.attempts = attempts;
+    this.word_list = word_list;
   }
 };
 var NotSet = class extends CustomType {
@@ -4612,16 +4613,31 @@ var Attempt = class extends CustomType {
     this.progress = progress;
   }
 };
+function init_word_list() {
+  return toList(["cross", "ninja", "music", "sword", "words"]);
+}
 function init_wordle(_) {
-  let level = 100;
   let _block;
-  let _pipe = "cross";
-  _block = graphemes(_pipe);
-  let solution = _block;
+  let $1 = init_word_list();
+  if ($1.hasLength(0)) {
+    _block = ["99999", toList([])];
+  } else {
+    let first_word = $1.head;
+    let rest = $1.tail;
+    _block = [first_word, rest];
+  }
+  let $ = _block;
+  let word = $[0];
+  let word_list = $[1];
+  let level = 100;
+  let _block$1;
+  let _pipe = word;
+  _block$1 = graphemes(_pipe);
+  let solution = _block$1;
   let guess = repeat2("", 5);
   let progress = repeat2(new NotSet(), 5);
   let attempts = toList([]);
-  return new Wordle(level, solution, guess, progress, attempts);
+  return new Wordle(level, solution, guess, progress, attempts, word_list);
 }
 function add_letter(word, letter) {
   if (word.hasLength(0)) {
@@ -4786,7 +4802,8 @@ function handle_submit_wordle(model) {
       _record.solution,
       _record.guess,
       progress,
-      attempts
+      attempts,
+      _record.word_list
     );
   }
 }
@@ -4805,7 +4822,8 @@ function update2(model, msg) {
       _record.solution,
       new_guess,
       _record.progress,
-      _record.attempts
+      _record.attempts,
+      _record.word_list
     );
   } else if (msg instanceof PlayerRemoveLetter) {
     let _block;
@@ -4818,7 +4836,8 @@ function update2(model, msg) {
       _record.solution,
       new_guess,
       _record.progress,
-      _record.attempts
+      _record.attempts,
+      _record.word_list
     );
   } else {
     let _pipe = model;
