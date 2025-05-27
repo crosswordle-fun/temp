@@ -24,7 +24,7 @@ pub type Attempt {
 }
 
 pub fn init_wordle(_) -> Wordle {
-  let level = 1
+  let level = 100
   let solution = "cross" |> string.to_graphemes
   let guess = list.repeat("", 5)
   let progress = list.repeat(NotSet, 5)

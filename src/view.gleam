@@ -1,3 +1,4 @@
+import gleam/int
 import gleam/list
 import gleam/string
 import lustre/attribute
@@ -8,12 +9,20 @@ import wordle.{type Attempt, type Progress, type Wordle}
 
 pub fn view(model: Wordle) {
   html.body(
-    [attribute.class("min-h-screen bg-white flex flex-col items-center px-2")],
     [
-      title_view(),
-      level_view(),
-      attempts_view(model.attempts),
-      guess_view(model),
+      attribute.class(
+        "min-h-screen bg-white flex flex-col items-center place-content-between",
+      ),
+    ],
+    [
+      html.div([attribute.class("flex flex-col items-center")], [
+        title_view(),
+        level_view(model.level),
+      ]),
+      html.div([attribute.class("bg-white flex flex-col items-center px-2")], [
+        attempts_view(model.attempts),
+        guess_view(model),
+      ]),
       keyboard_view(),
     ],
   )
@@ -32,7 +41,7 @@ fn title_view() {
   ])
 }
 
-fn level_view() {
+fn level_view(level: Int) {
   html.div(
     [attribute.class("inline-block bg-black text-white px-3 py-1 rounded-full")],
     [
@@ -44,7 +53,9 @@ fn level_view() {
         ],
         [
           html.text(" LVL "),
-          html.span([attribute.class("font-bold")], [html.text("1")]),
+          html.span([attribute.class("font-bold")], [
+            html.text(level |> int.to_string),
+          ]),
         ],
       ),
     ],
@@ -95,7 +106,7 @@ fn keyboard_view() {
   html.div(
     [
       attribute.class(
-        "w-full max-w-xs sm:max-w-sm flex flex-col items-center gap-y-1.5 p-1 sm:p-2",
+        "w-full max-w-xs sm:max-w-sm flex flex-col items-center gap-1 p-1 sm:p-2 border border-black",
       ),
     ],
     [row_1_view(), row_2_view(), row_3_view()],

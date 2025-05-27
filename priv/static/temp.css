@@ -600,6 +600,10 @@ video {
   flex-direction: column;
 }
 
+.place-content-between {
+  place-content: space-between;
+}
+
 .items-center {
   align-items: center;
 }
@@ -615,14 +619,6 @@ video {
 .gap-x-1 {
   -moz-column-gap: 0.25rem;
        column-gap: 0.25rem;
-}
-
-.gap-y-1 {
-  row-gap: 0.25rem;
-}
-
-.gap-y-1\.5 {
-  row-gap: 0.375rem;
 }
 
 .rounded {

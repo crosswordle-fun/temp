@@ -4613,7 +4613,7 @@ var Attempt = class extends CustomType {
   }
 };
 function init_wordle(_) {
-  let level = 1;
+  let level = 100;
   let _block;
   let _pipe = "cross";
   _block = graphemes(_pipe);
@@ -5014,7 +5014,7 @@ function title_view() {
     ])
   );
 }
-function level_view() {
+function level_view(level) {
   return div(
     toList([
       class$(
@@ -5032,7 +5032,14 @@ function level_view() {
           text3(" LVL "),
           span(
             toList([class$("font-bold")]),
-            toList([text3("1")])
+            toList([
+              text3(
+                (() => {
+                  let _pipe = level;
+                  return to_string(_pipe);
+                })()
+              )
+            ])
           )
         ])
       )
@@ -5127,7 +5134,7 @@ function keyboard_view() {
   return div(
     toList([
       class$(
-        "w-full max-w-xs sm:max-w-sm flex flex-col items-center gap-y-1.5 p-1 sm:p-2"
+        "w-full max-w-xs sm:max-w-sm flex flex-col items-center gap-1 p-1 sm:p-2 border border-black"
       )
     ]),
     toList([row_1_view(), row_2_view(), row_3_view()])
@@ -5184,13 +5191,19 @@ function guess_view(model) {
 function view(model) {
   return body(
     toList([
-      class$("min-h-screen bg-white flex flex-col items-center px-2")
+      class$(
+        "min-h-screen bg-white flex flex-col items-center place-content-between"
+      )
     ]),
     toList([
-      title_view(),
-      level_view(),
-      attempts_view(model.attempts),
-      guess_view(model),
+      div(
+        toList([class$("flex flex-col items-center")]),
+        toList([title_view(), level_view(model.level)])
+      ),
+      div(
+        toList([class$("bg-white flex flex-col items-center px-2")]),
+        toList([attempts_view(model.attempts), guess_view(model)])
+      ),
       keyboard_view()
     ])
   );
