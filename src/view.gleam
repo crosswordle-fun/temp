@@ -8,22 +8,28 @@ import msg
 import wordle.{type Attempt, type Progress, type Wordle}
 
 pub fn view(model: Wordle) {
-  html.body(
-    [
-      attribute.class(
-        "min-h-screen bg-white flex flex-col items-center place-content-between",
-      ),
-    ],
-    [
+  let is_game_over = model.word_list |> list.is_empty
+  let game_view = case is_game_over {
+    False -> {
       html.div([attribute.class("flex flex-col items-center")], [
-        title_view(),
         level_view(model.level),
-      ]),
-      html.div([attribute.class("bg-white flex flex-col items-center px-2")], [
-        attempts_view(model.attempts),
-        guess_view(model),
-      ]),
-      keyboard_view(),
+        html.div([attribute.class("bg-white flex flex-col items-center px-2")], [
+          attempts_view(model.attempts),
+          guess_view(model),
+        ]),
+        keyboard_view(),
+      ])
+    }
+    True ->
+      html.div([attribute.class("text-3xl flex p-4")], [
+        html.text("CONGRATS! YOU WIN!"),
+      ])
+  }
+  html.body(
+    [attribute.class("min-h-screen bg-white flex flex-col items-center")],
+    [
+      html.div([attribute.class("flex flex-col items-center")], [title_view()]),
+      game_view,
     ],
   )
 }

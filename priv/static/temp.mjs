@@ -1378,6 +1378,9 @@ function reverse_and_prepend(loop$prefix, loop$suffix) {
 function reverse(list4) {
   return reverse_and_prepend(list4, toList([]));
 }
+function is_empty(list4) {
+  return isEqual(list4, toList([]));
+}
 function contains(loop$list, loop$elem) {
   while (true) {
     let list4 = loop$list;
@@ -5405,22 +5408,40 @@ function guess_view(model) {
   );
 }
 function view(model) {
+  let _block;
+  let _pipe = model.word_list;
+  _block = is_empty(_pipe);
+  let is_game_over = _block;
+  let _block$1;
+  if (!is_game_over) {
+    _block$1 = div(
+      toList([class$("flex flex-col items-center")]),
+      toList([
+        level_view(model.level),
+        div(
+          toList([class$("bg-white flex flex-col items-center px-2")]),
+          toList([attempts_view(model.attempts), guess_view(model)])
+        ),
+        keyboard_view()
+      ])
+    );
+  } else {
+    _block$1 = div(
+      toList([class$("text-3xl flex p-4")]),
+      toList([text3("CONGRATS! YOU WIN!")])
+    );
+  }
+  let game_view = _block$1;
   return body(
     toList([
-      class$(
-        "min-h-screen bg-white flex flex-col items-center place-content-between"
-      )
+      class$("min-h-screen bg-white flex flex-col items-center")
     ]),
     toList([
       div(
         toList([class$("flex flex-col items-center")]),
-        toList([title_view(), level_view(model.level)])
+        toList([title_view()])
       ),
-      div(
-        toList([class$("bg-white flex flex-col items-center px-2")]),
-        toList([attempts_view(model.attempts), guess_view(model)])
-      ),
-      keyboard_view()
+      game_view
     ])
   );
 }
