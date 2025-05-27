@@ -10,6 +10,7 @@ pub type Wordle {
     progress: List(Progress),
     attempts: List(Attempt),
     word_list: List(String),
+    solved: Bool,
   )
 }
 
@@ -28,19 +29,38 @@ fn init_word_list() -> List(String) {
   ["cross", "ninja", "music", "sword", "words"]
 }
 
-pub fn init_wordle(_) -> Wordle {
-  let #(word, word_list) = case init_word_list() {
+fn init_guess() -> List(String) {
+  list.repeat("", 5)
+}
+
+fn init_progress() -> List(Progress) {
+  list.repeat(NotSet, 5)
+}
+
+pub fn init_wordle() -> Wordle {
+  let #(word, word_list) = init_word_list() |> get_next_level_word
+
+  let level = 1
+  let solution = word |> string.to_graphemes
+  let guess = init_guess()
+  let progress = init_progress()
+  let attempts = []
+  let solved = False
+
+  Wordle(level:, solution:, guess:, progress:, attempts:, word_list:, solved:)
+}
+
+pub fn init_model(_) -> Wordle {
+  init_wordle()
+}
+
+pub fn get_next_level_word(word_list: List(String)) {
+  let #(word, word_list) = case word_list {
     [] -> #("99999", [])
     [first_word, ..rest] -> #(first_word, rest)
   }
 
-  let level = 100
-  let solution = word |> string.to_graphemes
-  let guess = list.repeat("", 5)
-  let progress = list.repeat(NotSet, 5)
-  let attempts = []
-
-  Wordle(level:, solution:, guess:, progress:, attempts:, word_list:)
+  #(word, word_list)
 }
 
 pub fn add_letter(word: List(String), letter: String) -> List(String) {
