@@ -29,7 +29,7 @@ pub fn view(model: Wordle) {
 }
 
 fn title_view() {
-  html.header([attribute.class("w-full pb-3 pt-5 border-b border-black mb-3")], [
+  html.header([attribute.class("w-full py-5 border-b border-black mb-3")], [
     html.h1(
       [
         attribute.class(
@@ -43,16 +43,16 @@ fn title_view() {
 
 fn level_view(level: Int) {
   html.div(
-    [attribute.class("inline-block bg-black text-white px-3 py-1 rounded-full")],
+    [attribute.class("inline-block bg-black text-white px-3 py-1 rounded")],
     [
       html.p(
         [
           attribute.class(
-            "text-xs sm:text-sm font-semibold uppercase tracking-wide",
+            "text-m sm:text-sm font-semibold uppercase tracking-wide",
           ),
         ],
         [
-          html.text(" LVL "),
+          html.text("LVL "),
           html.span([attribute.class("font-bold")], [
             html.text(level |> int.to_string),
           ]),
@@ -75,9 +75,25 @@ fn attempts_view(attempts: List(Attempt)) {
 }
 
 fn guess_view(model: Wordle) {
+  let tiles_or_button = case model.solved {
+    False -> tiles_view(model.guess, model.progress)
+    True -> next_level_view()
+  }
   html.div([attribute.class("flex justify-center py-4 bg-white")], [
-    tiles_view(model.guess, model.progress),
+    tiles_or_button,
   ])
+}
+
+fn next_level_view() {
+  html.button(
+    [
+      attribute.class(
+        "h-11 px-4 sm:px-6 bg-black text-white border border-black rounded flex items-center justify-center text-sm sm:text-base font-semibold uppercase tracking-wider hover:bg-neutral-800 active:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black",
+      ),
+      event.on_click(msg.PlayerNextLevel),
+    ],
+    [html.text("Next Level")],
+  )
 }
 
 fn tiles_view(guess: List(String), progress: List(Progress)) {
@@ -106,7 +122,7 @@ fn keyboard_view() {
   html.div(
     [
       attribute.class(
-        "w-full max-w-xs sm:max-w-sm flex flex-col items-center gap-1 p-1 sm:p-2 border border-black",
+        "w-full max-w-xs sm:max-w-sm flex flex-col items-center gap-1 p-1 py-5 sm:p-2",
       ),
     ],
     [row_1_view(), row_2_view(), row_3_view()],

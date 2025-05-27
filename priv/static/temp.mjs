@@ -1692,6 +1692,25 @@ function fold2(loop$list, loop$initial, loop$fun) {
     }
   }
 }
+function all(loop$list, loop$predicate) {
+  while (true) {
+    let list4 = loop$list;
+    let predicate = loop$predicate;
+    if (list4.hasLength(0)) {
+      return true;
+    } else {
+      let first$1 = list4.head;
+      let rest$1 = list4.tail;
+      let $ = predicate(first$1);
+      if ($) {
+        loop$list = rest$1;
+        loop$predicate = predicate;
+      } else {
+        return false;
+      }
+    }
+  }
+}
 function unzip_loop(loop$input, loop$one, loop$other) {
   while (true) {
     let input = loop$input;
@@ -4588,7 +4607,7 @@ function on_keypress(callback) {
 
 // build/dev/javascript/temp/wordle.mjs
 var Wordle = class extends CustomType {
-  constructor(level, solution, guess, progress, attempts, word_list) {
+  constructor(level, solution, guess, progress, attempts, word_list, solved) {
     super();
     this.level = level;
     this.solution = solution;
@@ -4596,6 +4615,7 @@ var Wordle = class extends CustomType {
     this.progress = progress;
     this.attempts = attempts;
     this.word_list = word_list;
+    this.solved = solved;
   }
 };
 var NotSet = class extends CustomType {
@@ -4616,28 +4636,54 @@ var Attempt = class extends CustomType {
 function init_word_list() {
   return toList(["cross", "ninja", "music", "sword", "words"]);
 }
-function init_wordle(_) {
+function init_guess() {
+  return repeat2("", 5);
+}
+function init_progress() {
+  return repeat2(new NotSet(), 5);
+}
+function get_next_level_word(word_list) {
   let _block;
-  let $1 = init_word_list();
-  if ($1.hasLength(0)) {
+  if (word_list.hasLength(0)) {
     _block = ["99999", toList([])];
   } else {
-    let first_word = $1.head;
-    let rest = $1.tail;
+    let first_word = word_list.head;
+    let rest = word_list.tail;
     _block = [first_word, rest];
   }
   let $ = _block;
   let word = $[0];
+  let word_list$1 = $[1];
+  return [word, word_list$1];
+}
+function init_wordle() {
+  let _block;
+  let _pipe = init_word_list();
+  _block = get_next_level_word(_pipe);
+  let $ = _block;
+  let word = $[0];
   let word_list = $[1];
-  let level = 100;
+  let level = 1;
   let _block$1;
-  let _pipe = word;
-  _block$1 = graphemes(_pipe);
+  let _pipe$1 = word;
+  _block$1 = graphemes(_pipe$1);
   let solution = _block$1;
-  let guess = repeat2("", 5);
-  let progress = repeat2(new NotSet(), 5);
+  let guess = init_guess();
+  let progress = init_progress();
   let attempts = toList([]);
-  return new Wordle(level, solution, guess, progress, attempts, word_list);
+  let solved = false;
+  return new Wordle(
+    level,
+    solution,
+    guess,
+    progress,
+    attempts,
+    word_list,
+    solved
+  );
+}
+function init_model(_) {
+  return init_wordle();
 }
 function add_letter(word, letter) {
   if (word.hasLength(0)) {
@@ -4771,8 +4817,9 @@ var PlayerRemoveLetter = class extends CustomType {
 };
 var PlayerSubmitWordle = class extends CustomType {
 };
+var PlayerNextLevel = class extends CustomType {
+};
 function handle_submit_wordle(model) {
-  let guess = model.guess;
   let is_full_word = (() => {
     let _pipe = model.guess;
     let _pipe$1 = fold2(_pipe, "", append);
@@ -4782,7 +4829,7 @@ function handle_submit_wordle(model) {
     return model;
   } else {
     let _block;
-    let _pipe = guess;
+    let _pipe = model.guess;
     _block = check_progress_with_freq(_pipe, model.solution);
     let progress = _block;
     let _block$1;
@@ -4795,7 +4842,7 @@ function handle_submit_wordle(model) {
       })()
     );
     let attempts = _block$1;
-    echo(attempts, "src/msg.gleam", 41);
+    echo(attempts, "src/msg.gleam", 47);
     let _record = model;
     return new Wordle(
       _record.level,
@@ -4803,9 +4850,67 @@ function handle_submit_wordle(model) {
       _record.guess,
       progress,
       attempts,
-      _record.word_list
+      _record.word_list,
+      _record.solved
     );
   }
+}
+function clear_guess_input(model) {
+  let _record = model;
+  return new Wordle(
+    _record.level,
+    _record.solution,
+    repeat2("", 5),
+    _record.progress,
+    _record.attempts,
+    _record.word_list,
+    _record.solved
+  );
+}
+function handle_correct_guess(model) {
+  let $ = (() => {
+    let _pipe = model.progress;
+    return all(_pipe, (p2) => {
+      return isEqual(p2, new Correct());
+    });
+  })();
+  if (!$) {
+    return model;
+  } else {
+    let _record = model;
+    return new Wordle(
+      _record.level,
+      _record.solution,
+      _record.guess,
+      _record.progress,
+      _record.attempts,
+      _record.word_list,
+      true
+    );
+  }
+}
+function handle_next_level(model) {
+  let level = model.level + 1;
+  let _block;
+  let _pipe = model.word_list;
+  _block = get_next_level_word(_pipe);
+  let $ = _block;
+  let word = $[0];
+  let word_list = $[1];
+  let _block$1;
+  let _pipe$1 = word;
+  _block$1 = graphemes(_pipe$1);
+  let solution = _block$1;
+  let _record = init_wordle();
+  return new Wordle(
+    level,
+    solution,
+    _record.guess,
+    _record.progress,
+    _record.attempts,
+    word_list,
+    _record.solved
+  );
 }
 function update2(model, msg) {
   if (msg instanceof PlayerStartGame) {
@@ -4823,7 +4928,8 @@ function update2(model, msg) {
       new_guess,
       _record.progress,
       _record.attempts,
-      _record.word_list
+      _record.word_list,
+      _record.solved
     );
   } else if (msg instanceof PlayerRemoveLetter) {
     let _block;
@@ -4837,11 +4943,17 @@ function update2(model, msg) {
       new_guess,
       _record.progress,
       _record.attempts,
-      _record.word_list
+      _record.word_list,
+      _record.solved
     );
+  } else if (msg instanceof PlayerSubmitWordle) {
+    let _pipe = model;
+    let _pipe$1 = handle_submit_wordle(_pipe);
+    let _pipe$2 = clear_guess_input(_pipe$1);
+    return handle_correct_guess(_pipe$2);
   } else {
     let _pipe = model;
-    return handle_submit_wordle(_pipe);
+    return handle_next_level(_pipe);
   }
 }
 function echo(value, file, line) {
@@ -5020,7 +5132,7 @@ function on_click(msg) {
 // build/dev/javascript/temp/view.mjs
 function title_view() {
   return header(
-    toList([class$("w-full pb-3 pt-5 border-b border-black mb-3")]),
+    toList([class$("w-full py-5 border-b border-black mb-3")]),
     toList([
       h1(
         toList([
@@ -5036,19 +5148,17 @@ function title_view() {
 function level_view(level) {
   return div(
     toList([
-      class$(
-        "inline-block bg-black text-white px-3 py-1 rounded-full"
-      )
+      class$("inline-block bg-black text-white px-3 py-1 rounded")
     ]),
     toList([
       p(
         toList([
           class$(
-            "text-xs sm:text-sm font-semibold uppercase tracking-wide"
+            "text-m sm:text-sm font-semibold uppercase tracking-wide"
           )
         ]),
         toList([
-          text3(" LVL "),
+          text3("LVL "),
           span(
             toList([class$("font-bold")]),
             toList([
@@ -5063,6 +5173,17 @@ function level_view(level) {
         ])
       )
     ])
+  );
+}
+function next_level_view() {
+  return button(
+    toList([
+      class$(
+        "h-11 px-4 sm:px-6 bg-black text-white border border-black rounded flex items-center justify-center text-sm sm:text-base font-semibold uppercase tracking-wider hover:bg-neutral-800 active:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+      ),
+      on_click(new PlayerNextLevel())
+    ]),
+    toList([text3("Next Level")])
   );
 }
 function single_tile(letter, progress_color) {
@@ -5153,7 +5274,7 @@ function keyboard_view() {
   return div(
     toList([
       class$(
-        "w-full max-w-xs sm:max-w-sm flex flex-col items-center gap-1 p-1 sm:p-2 border border-black"
+        "w-full max-w-xs sm:max-w-sm flex flex-col items-center gap-1 p-1 py-5 sm:p-2"
       )
     ]),
     toList([row_1_view(), row_2_view(), row_3_view()])
@@ -5202,9 +5323,17 @@ function attempts_view(attempts) {
   );
 }
 function guess_view(model) {
+  let _block;
+  let $ = model.solved;
+  if (!$) {
+    _block = tiles_view(model.guess, model.progress);
+  } else {
+    _block = next_level_view();
+  }
+  let tiles_or_button = _block;
   return div(
     toList([class$("flex justify-center py-4 bg-white")]),
-    toList([tiles_view(model.guess, model.progress)])
+    toList([tiles_or_button])
   );
 }
 function view(model) {
@@ -5259,7 +5388,7 @@ function handle_key(key, runtime) {
   }
 }
 function main() {
-  let app = simple(init_wordle, update2, view);
+  let app = simple(init_model, update2, view);
   let $ = start3(app, "#app", void 0);
   if (!$.isOk()) {
     throw makeError(
