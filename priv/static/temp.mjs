@@ -4637,7 +4637,7 @@ var Attempt = class extends CustomType {
   }
 };
 function init_word_list() {
-  return toList(["cross", "ninja", "music", "sword", "words"]);
+  return toList(["cross", "sword", "ninja", "music", "words"]);
 }
 function init_guess() {
   return repeat("", 5);

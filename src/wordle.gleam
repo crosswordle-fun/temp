@@ -26,7 +26,7 @@ pub type Attempt {
 }
 
 fn init_word_list() -> List(String) {
-  ["cross", "ninja", "music", "sword", "words"]
+  ["cross", "sword", "ninja", "music", "words"]
 }
 
 fn init_guess() -> List(String) {
