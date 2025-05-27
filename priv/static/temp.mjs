@@ -1356,162 +1356,6 @@ var Eq = class extends CustomType {
 var Gt = class extends CustomType {
 };
 
-// build/dev/javascript/gleam_stdlib/gleam/string.mjs
-function compare(a, b) {
-  let $ = a === b;
-  if ($) {
-    return new Eq();
-  } else {
-    let $1 = less_than(a, b);
-    if ($1) {
-      return new Lt();
-    } else {
-      return new Gt();
-    }
-  }
-}
-function append(first, second) {
-  return first + second;
-}
-function concat_loop(loop$strings, loop$accumulator) {
-  while (true) {
-    let strings = loop$strings;
-    let accumulator = loop$accumulator;
-    if (strings.atLeastLength(1)) {
-      let string5 = strings.head;
-      let strings$1 = strings.tail;
-      loop$strings = strings$1;
-      loop$accumulator = accumulator + string5;
-    } else {
-      return accumulator;
-    }
-  }
-}
-function concat2(strings) {
-  return concat_loop(strings, "");
-}
-
-// build/dev/javascript/gleam_stdlib/gleam/dynamic/decode.mjs
-var Decoder = class extends CustomType {
-  constructor(function$) {
-    super();
-    this.function = function$;
-  }
-};
-function run(data, decoder) {
-  let $ = decoder.function(data);
-  let maybe_invalid_data = $[0];
-  let errors = $[1];
-  if (errors.hasLength(0)) {
-    return new Ok(maybe_invalid_data);
-  } else {
-    return new Error(errors);
-  }
-}
-function success(data) {
-  return new Decoder((_) => {
-    return [data, toList([])];
-  });
-}
-function map2(decoder, transformer) {
-  return new Decoder(
-    (d) => {
-      let $ = decoder.function(d);
-      let data = $[0];
-      let errors = $[1];
-      return [transformer(data), errors];
-    }
-  );
-}
-
-// build/dev/javascript/gleam_stdlib/gleam_stdlib.mjs
-var Nil = void 0;
-var NOT_FOUND = {};
-function to_string(term) {
-  return term.toString();
-}
-function string_length(string5) {
-  if (string5 === "") {
-    return 0;
-  }
-  const iterator = graphemes_iterator(string5);
-  if (iterator) {
-    let i = 0;
-    for (const _ of iterator) {
-      i++;
-    }
-    return i;
-  } else {
-    return string5.match(/./gsu).length;
-  }
-}
-function graphemes(string5) {
-  const iterator = graphemes_iterator(string5);
-  if (iterator) {
-    return List.fromArray(Array.from(iterator).map((item) => item.segment));
-  } else {
-    return List.fromArray(string5.match(/./gsu));
-  }
-}
-var segmenter = void 0;
-function graphemes_iterator(string5) {
-  if (globalThis.Intl && Intl.Segmenter) {
-    segmenter ||= new Intl.Segmenter();
-    return segmenter.segment(string5)[Symbol.iterator]();
-  }
-}
-function lowercase(string5) {
-  return string5.toLowerCase();
-}
-function less_than(a, b) {
-  return a < b;
-}
-function starts_with(haystack, needle) {
-  return haystack.startsWith(needle);
-}
-var unicode_whitespaces = [
-  " ",
-  // Space
-  "	",
-  // Horizontal tab
-  "\n",
-  // Line feed
-  "\v",
-  // Vertical tab
-  "\f",
-  // Form feed
-  "\r",
-  // Carriage return
-  "\x85",
-  // Next line
-  "\u2028",
-  // Line separator
-  "\u2029"
-  // Paragraph separator
-].join("");
-var trim_start_regex = /* @__PURE__ */ new RegExp(
-  `^[${unicode_whitespaces}]*`
-);
-var trim_end_regex = /* @__PURE__ */ new RegExp(`[${unicode_whitespaces}]*$`);
-function new_map() {
-  return Dict.new();
-}
-function map_get(map4, key) {
-  const value = map4.get(key, NOT_FOUND);
-  if (value === NOT_FOUND) {
-    return new Error(Nil);
-  }
-  return new Ok(value);
-}
-function map_insert(key, value, map4) {
-  return map4.set(key, value);
-}
-
-// build/dev/javascript/gleam_stdlib/gleam/dict.mjs
-function insert(dict2, key, value) {
-  return map_insert(key, value, dict2);
-}
-
 // build/dev/javascript/gleam_stdlib/gleam/list.mjs
 var Ascending = class extends CustomType {
 };
@@ -1591,7 +1435,7 @@ function map2_loop(loop$list1, loop$list2, loop$fun, loop$acc) {
     }
   }
 }
-function map22(list1, list22, fun) {
+function map2(list1, list22, fun) {
   return map2_loop(list1, list22, fun, toList([]));
 }
 function map_fold_loop(loop$list, loop$fun, loop$acc, loop$list_acc) {
@@ -1653,7 +1497,7 @@ function append_loop(loop$first, loop$second) {
     }
   }
 }
-function append2(first, second) {
+function append(first, second) {
   return append_loop(reverse(first), second);
 }
 function prepend2(list4, item) {
@@ -1676,7 +1520,7 @@ function flatten_loop(loop$lists, loop$acc) {
 function flatten(lists) {
   return flatten_loop(lists, toList([]));
 }
-function fold2(loop$list, loop$initial, loop$fun) {
+function fold(loop$list, loop$initial, loop$fun) {
   while (true) {
     let list4 = loop$list;
     let initial = loop$initial;
@@ -2063,7 +1907,7 @@ function repeat_loop(loop$item, loop$times, loop$acc) {
     }
   }
 }
-function repeat2(a, times) {
+function repeat(a, times) {
   return repeat_loop(a, times, toList([]));
 }
 function chunk_loop(loop$list, loop$f, loop$previous_key, loop$current_chunk, loop$acc) {
@@ -2105,6 +1949,162 @@ function chunk(list4, f) {
     let rest$1 = list4.tail;
     return chunk_loop(rest$1, f, f(first$1), toList([first$1]), toList([]));
   }
+}
+
+// build/dev/javascript/gleam_stdlib/gleam/string.mjs
+function compare3(a, b) {
+  let $ = a === b;
+  if ($) {
+    return new Eq();
+  } else {
+    let $1 = less_than(a, b);
+    if ($1) {
+      return new Lt();
+    } else {
+      return new Gt();
+    }
+  }
+}
+function append2(first, second) {
+  return first + second;
+}
+function concat_loop(loop$strings, loop$accumulator) {
+  while (true) {
+    let strings = loop$strings;
+    let accumulator = loop$accumulator;
+    if (strings.atLeastLength(1)) {
+      let string5 = strings.head;
+      let strings$1 = strings.tail;
+      loop$strings = strings$1;
+      loop$accumulator = accumulator + string5;
+    } else {
+      return accumulator;
+    }
+  }
+}
+function concat2(strings) {
+  return concat_loop(strings, "");
+}
+
+// build/dev/javascript/gleam_stdlib/gleam/dynamic/decode.mjs
+var Decoder = class extends CustomType {
+  constructor(function$) {
+    super();
+    this.function = function$;
+  }
+};
+function run(data, decoder) {
+  let $ = decoder.function(data);
+  let maybe_invalid_data = $[0];
+  let errors = $[1];
+  if (errors.hasLength(0)) {
+    return new Ok(maybe_invalid_data);
+  } else {
+    return new Error(errors);
+  }
+}
+function success(data) {
+  return new Decoder((_) => {
+    return [data, toList([])];
+  });
+}
+function map3(decoder, transformer) {
+  return new Decoder(
+    (d) => {
+      let $ = decoder.function(d);
+      let data = $[0];
+      let errors = $[1];
+      return [transformer(data), errors];
+    }
+  );
+}
+
+// build/dev/javascript/gleam_stdlib/gleam_stdlib.mjs
+var Nil = void 0;
+var NOT_FOUND = {};
+function to_string(term) {
+  return term.toString();
+}
+function string_length(string5) {
+  if (string5 === "") {
+    return 0;
+  }
+  const iterator = graphemes_iterator(string5);
+  if (iterator) {
+    let i = 0;
+    for (const _ of iterator) {
+      i++;
+    }
+    return i;
+  } else {
+    return string5.match(/./gsu).length;
+  }
+}
+function graphemes(string5) {
+  const iterator = graphemes_iterator(string5);
+  if (iterator) {
+    return List.fromArray(Array.from(iterator).map((item) => item.segment));
+  } else {
+    return List.fromArray(string5.match(/./gsu));
+  }
+}
+var segmenter = void 0;
+function graphemes_iterator(string5) {
+  if (globalThis.Intl && Intl.Segmenter) {
+    segmenter ||= new Intl.Segmenter();
+    return segmenter.segment(string5)[Symbol.iterator]();
+  }
+}
+function lowercase(string5) {
+  return string5.toLowerCase();
+}
+function less_than(a, b) {
+  return a < b;
+}
+function starts_with(haystack, needle) {
+  return haystack.startsWith(needle);
+}
+var unicode_whitespaces = [
+  " ",
+  // Space
+  "	",
+  // Horizontal tab
+  "\n",
+  // Line feed
+  "\v",
+  // Vertical tab
+  "\f",
+  // Form feed
+  "\r",
+  // Carriage return
+  "\x85",
+  // Next line
+  "\u2028",
+  // Line separator
+  "\u2029"
+  // Paragraph separator
+].join("");
+var trim_start_regex = /* @__PURE__ */ new RegExp(
+  `^[${unicode_whitespaces}]*`
+);
+var trim_end_regex = /* @__PURE__ */ new RegExp(`[${unicode_whitespaces}]*$`);
+function new_map() {
+  return Dict.new();
+}
+function map_get(map5, key) {
+  const value = map5.get(key, NOT_FOUND);
+  if (value === NOT_FOUND) {
+    return new Error(Nil);
+  }
+  return new Ok(value);
+}
+function map_insert(key, value, map5) {
+  return map5.set(key, value);
+}
+
+// build/dev/javascript/gleam_stdlib/gleam/dict.mjs
+function insert(dict2, key, value) {
+  return map_insert(key, value, dict2);
 }
 
 // build/dev/javascript/gleam_stdlib/gleam/bool.mjs
@@ -2325,22 +2325,22 @@ function none() {
 function empty2() {
   return null;
 }
-function get(map4, key) {
-  const value = map4?.get(key);
+function get(map5, key) {
+  const value = map5?.get(key);
   if (value != null) {
     return new Ok(value);
   } else {
     return new Error(void 0);
   }
 }
-function insert3(map4, key, value) {
-  map4 ??= /* @__PURE__ */ new Map();
-  map4.set(key, value);
-  return map4;
+function insert3(map5, key, value) {
+  map5 ??= /* @__PURE__ */ new Map();
+  map5.set(key, value);
+  return map5;
 }
-function remove(map4, key) {
-  map4?.delete(key);
-  return map4;
+function remove(map5, key) {
+  map5?.delete(key);
+  return map5;
 }
 
 // build/dev/javascript/lustre/lustre/vdom/path.mjs
@@ -3252,9 +3252,9 @@ function do_diff(loop$old, loop$old_keyed, loop$new, loop$new_keyed, loop$moved,
       if ($) {
         let remove_from = node_index$1 + next_count - moved_offset;
         let patch = remove2(remove_from, child.patch.removed);
-        _block = append2(child.patch.changes, prepend(patch, changes));
+        _block = append(child.patch.changes, prepend(patch, changes));
       } else {
-        _block = append2(child.patch.changes, changes);
+        _block = append(child.patch.changes, changes);
       }
       let changes$1 = _block;
       loop$old = old$1;
@@ -4137,7 +4137,7 @@ function listAppend(a, b) {
   } else if (b instanceof Empty) {
     return a;
   } else {
-    return append2(a, b);
+    return append(a, b);
   }
 }
 
@@ -4177,7 +4177,7 @@ function remove_event(events, path, name) {
   );
 }
 function remove_attributes(handlers, path, attributes) {
-  return fold2(
+  return fold(
     attributes,
     handlers,
     (events, attribute3) => {
@@ -4218,7 +4218,7 @@ function do_add_event(handlers, mapper, path, name, handler) {
   return insert3(
     handlers,
     event2(path, name),
-    map2(handler, identity2(mapper))
+    map3(handler, identity2(mapper))
   );
 }
 function add_event(events, mapper, path, name, handler) {
@@ -4231,7 +4231,7 @@ function add_event(events, mapper, path, name, handler) {
   );
 }
 function add_attributes(handlers, mapper, path, attributes) {
-  return fold2(
+  return fold(
     attributes,
     handlers,
     (events, attribute3) => {
@@ -4511,7 +4511,7 @@ function new$6(options) {
     option_none,
     option_none
   );
-  return fold2(
+  return fold(
     options,
     init,
     (config, option) => {
@@ -4637,10 +4637,10 @@ function init_word_list() {
   return toList(["cross", "ninja", "music", "sword", "words"]);
 }
 function init_guess() {
-  return repeat2("", 5);
+  return repeat("", 5);
 }
 function init_progress() {
-  return repeat2(new NotSet(), 5);
+  return repeat(new NotSet(), 5);
 }
 function get_next_level_word(word_list) {
   let _block;
@@ -4717,7 +4717,7 @@ function remove_letter(word) {
 function check_with_freqs(freq, letter) {
   let _block;
   let _pipe = freq;
-  let _pipe$1 = sort(_pipe, compare);
+  let _pipe$1 = sort(_pipe, compare3);
   let _pipe$2 = chunk(_pipe$1, (x) => {
     return x;
   });
@@ -4748,7 +4748,7 @@ function check_with_freqs(freq, letter) {
   let _block$1;
   let $1 = (() => {
     let _pipe$4 = is_present_list;
-    return fold2(_pipe$4, false, or);
+    return fold(_pipe$4, false, or);
   })();
   if (!$1) {
     _block$1 = new Absent();
@@ -4767,7 +4767,7 @@ function check_with_freqs(freq, letter) {
 function check_progress_with_freq(guess, solution) {
   let _block;
   let _pipe = guess;
-  _block = map22(
+  _block = map2(
     _pipe,
     solution,
     (g, s) => {
@@ -4787,7 +4787,7 @@ function check_progress_with_freq(guess, solution) {
   let pass_2 = $[1];
   let _block$2;
   let _pipe$2 = pass_1;
-  _block$2 = map22(
+  _block$2 = map2(
     _pipe$2,
     pass_2,
     (p1, p2) => {
@@ -4819,10 +4819,16 @@ var PlayerSubmitWordle = class extends CustomType {
 };
 var PlayerNextLevel = class extends CustomType {
 };
+var HandleKeyPressEvent = class extends CustomType {
+  constructor(key) {
+    super();
+    this.key = key;
+  }
+};
 function handle_submit_wordle(model) {
   let is_full_word = (() => {
     let _pipe = model.guess;
-    let _pipe$1 = fold2(_pipe, "", append);
+    let _pipe$1 = fold(_pipe, "", append2);
     return string_length(_pipe$1);
   })() === 5;
   if (!is_full_word) {
@@ -4834,7 +4840,7 @@ function handle_submit_wordle(model) {
     let progress = _block;
     let _block$1;
     let _pipe$1 = model.attempts;
-    _block$1 = append2(
+    _block$1 = append(
       _pipe$1,
       (() => {
         let _pipe$2 = new Attempt(model.guess, progress);
@@ -4842,7 +4848,7 @@ function handle_submit_wordle(model) {
       })()
     );
     let attempts = _block$1;
-    echo(attempts, "src/msg.gleam", 47);
+    echo(attempts, "src/msg.gleam", 49);
     let _record = model;
     return new Wordle(
       _record.level,
@@ -4860,7 +4866,7 @@ function clear_guess_input(model) {
   return new Wordle(
     _record.level,
     _record.solution,
-    repeat2("", 5),
+    repeat("", 5),
     _record.progress,
     _record.attempts,
     _record.word_list,
@@ -4912,6 +4918,64 @@ function handle_next_level(model) {
     _record.solved
   );
 }
+function handle_key(model, key) {
+  let _block;
+  let _pipe = key;
+  _block = lowercase(_pipe);
+  let lowercased_key = _block;
+  if (lowercased_key === "enter") {
+    let $ = model.solved;
+    if (!$) {
+      let _pipe$1 = model;
+      let _pipe$2 = handle_submit_wordle(_pipe$1);
+      let _pipe$3 = clear_guess_input(_pipe$2);
+      return handle_correct_guess(_pipe$3);
+    } else {
+      let _pipe$1 = model;
+      return handle_next_level(_pipe$1);
+    }
+  } else if (lowercased_key === "backspace") {
+    let _block$1;
+    let _pipe$1 = model.guess;
+    _block$1 = remove_letter(_pipe$1);
+    let new_guess = _block$1;
+    let _record = model;
+    return new Wordle(
+      _record.level,
+      _record.solution,
+      new_guess,
+      _record.progress,
+      _record.attempts,
+      _record.word_list,
+      _record.solved
+    );
+  } else {
+    let letter = lowercased_key;
+    let $ = (() => {
+      let _pipe$1 = "abcdefghijklmnopqrstuvwxyz";
+      let _pipe$2 = graphemes(_pipe$1);
+      return contains(_pipe$2, lowercased_key);
+    })();
+    if (!$) {
+      return model;
+    } else {
+      let _block$1;
+      let _pipe$1 = model.guess;
+      _block$1 = add_letter(_pipe$1, letter);
+      let new_guess = _block$1;
+      let _record = model;
+      return new Wordle(
+        _record.level,
+        _record.solution,
+        new_guess,
+        _record.progress,
+        _record.attempts,
+        _record.word_list,
+        _record.solved
+      );
+    }
+  }
+}
 function update2(model, msg) {
   if (msg instanceof PlayerStartGame) {
     return model;
@@ -4951,9 +5015,13 @@ function update2(model, msg) {
     let _pipe$1 = handle_submit_wordle(_pipe);
     let _pipe$2 = clear_guess_input(_pipe$1);
     return handle_correct_guess(_pipe$2);
-  } else {
+  } else if (msg instanceof PlayerNextLevel) {
     let _pipe = model;
     return handle_next_level(_pipe);
+  } else {
+    let key = msg.key;
+    let _pipe = model;
+    return handle_key(_pipe, key);
   }
 }
 function echo(value, file, line) {
@@ -4997,11 +5065,11 @@ function echo$inspectString(str) {
   new_str += '"';
   return new_str;
 }
-function echo$inspectDict(map4) {
+function echo$inspectDict(map5) {
   let body2 = "dict.from_list([";
   let first = true;
   let key_value_pairs = [];
-  map4.forEach((value, key) => {
+  map5.forEach((value, key) => {
     key_value_pairs.push([key, value]);
   });
   key_value_pairs.sort();
@@ -5259,7 +5327,7 @@ function row_3_view() {
   let _pipe = "zxcvbnm";
   let _pipe$1 = graphemes(_pipe);
   let _pipe$2 = map(_pipe$1, key_view);
-  let _pipe$3 = append2(_pipe$2, toList([enter_key_view()]));
+  let _pipe$3 = append(_pipe$2, toList([enter_key_view()]));
   let _pipe$4 = prepend2(_pipe$3, delete_key_view());
   return ((_capture) => {
     return div(
@@ -5300,7 +5368,7 @@ function tiles_view(guess, progress) {
     toList([class$("flex grid grid-cols-5 gap-1")]),
     (() => {
       let _pipe$1 = guess;
-      return map22(_pipe$1, progress_colors, single_tile);
+      return map2(_pipe$1, progress_colors, single_tile);
     })()
   );
 }
@@ -5358,35 +5426,6 @@ function view(model) {
 }
 
 // build/dev/javascript/temp/temp.mjs
-function handle_key(key, runtime) {
-  let _block;
-  let _pipe = key;
-  _block = lowercase(_pipe);
-  let lowercased_key = _block;
-  if (lowercased_key === "enter") {
-    let _pipe$1 = new PlayerSubmitWordle();
-    let _pipe$2 = dispatch(_pipe$1);
-    return send(runtime, _pipe$2);
-  } else if (lowercased_key === "backspace") {
-    let _pipe$1 = new PlayerRemoveLetter();
-    let _pipe$2 = dispatch(_pipe$1);
-    return send(runtime, _pipe$2);
-  } else {
-    let letter = lowercased_key;
-    let $ = (() => {
-      let _pipe$1 = "abcdefghijklmnopqrstuvwxyz";
-      let _pipe$2 = graphemes(_pipe$1);
-      return contains(_pipe$2, lowercased_key);
-    })();
-    if (!$) {
-      return void 0;
-    } else {
-      let _pipe$1 = new PlayerAddLetter(letter);
-      let _pipe$2 = dispatch(_pipe$1);
-      return send(runtime, _pipe$2);
-    }
-  }
-}
 function main() {
   let app = simple(init_model, update2, view);
   let $ = start3(app, "#app", void 0);
@@ -5394,16 +5433,21 @@ function main() {
     throw makeError(
       "let_assert",
       "temp",
-      11,
+      9,
       "main",
       "Pattern match failed, no pattern matched the value.",
       { value: $ }
     );
   }
   let runtime = $[0];
-  return on_keypress((key) => {
-    return handle_key(key, runtime);
-  });
+  return on_keypress(
+    (key) => {
+      let _pipe = key;
+      let _pipe$1 = new HandleKeyPressEvent(_pipe);
+      let _pipe$2 = dispatch(_pipe$1);
+      return send(runtime, _pipe$2);
+    }
+  );
 }
 
 // build/.lustre/entry.mjs

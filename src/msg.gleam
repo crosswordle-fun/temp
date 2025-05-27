@@ -8,6 +8,7 @@ pub type Msg {
   PlayerRemoveLetter
   PlayerSubmitWordle
   PlayerNextLevel
+  HandleKeyPressEvent(key: String)
 }
 
 pub fn update(model: Wordle, msg: Msg) -> Wordle {
@@ -27,6 +28,7 @@ pub fn update(model: Wordle, msg: Msg) -> Wordle {
       |> clear_guess_input
       |> handle_correct_guess
     PlayerNextLevel -> model |> handle_next_level
+    HandleKeyPressEvent(key) -> model |> handle_key(key)
   }
 }
 
@@ -72,4 +74,38 @@ fn handle_next_level(model: Wordle) {
   let solution = word |> string.to_graphemes
 
   Wordle(..wordle.init_wordle(), level:, solution:, word_list:)
+}
+
+fn handle_key(model: Wordle, key: String) {
+  let lowercased_key = key |> string.lowercase
+  case lowercased_key {
+    "enter" -> {
+      case model.solved {
+        False -> {
+          model
+          |> handle_submit_wordle
+          |> clear_guess_input
+          |> handle_correct_guess
+        }
+        True -> model |> handle_next_level
+      }
+    }
+    "backspace" -> {
+      let new_guess = model.guess |> wordle.remove_letter
+      Wordle(..model, guess: new_guess)
+    }
+    letter -> {
+      case
+        "abcdefghijklmnopqrstuvwxyz"
+        |> string.to_graphemes
+        |> list.contains(lowercased_key)
+      {
+        False -> model
+        True -> {
+          let new_guess = model.guess |> wordle.add_letter(letter)
+          Wordle(..model, guess: new_guess)
+        }
+      }
+    }
+  }
 }
